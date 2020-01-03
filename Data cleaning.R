@@ -79,8 +79,63 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
                     
                     
           #3. Self-reported health
+                table(raw_data$hc5health, exclude=NULL) #examine raw data
+                temp_poorhealth<-ifelse(raw_data$hc5health==-7|raw_data$hc5health==-8,NA,raw_data$hc5health)
+                temp_poorhealth.bin<-(temp_poorhealth>=4)
+                table(temp_poorhealth.bin, exclude=NULL)
+                
+                clean_data$poorhealth.bin<-ifelse(temp_poorhealth.bin,1, ifelse(!temp_poorhealth.bin,0,NA)) #code clean depression indicator outcome    
+                    table(clean_data$poorhealth.bin, raw_data$hc5health, exclude=NULL) #check coding
+                #FINAL CODING# clean_data$poorhealth.bin: 1=fair/poor self-rated health, 0=excellent, very good, or good self-rated health
                     
-                    
+          #4. Bothered by pain in last month
+                table(raw_data$ss5painbothr, exclude=NULL)
+                
+                clean_data$pain.bother[raw_data$ss5painbothr==1]<-1 #Recode to painbother = 1 if yes
+                clean_data$pain.bother[raw_data$ss5painbothr==2]<-0 #Recode to painbother = 1 if no
+                clean_data$pain.bother[raw_data$ss5painbothr==-8]<-NA #Recode to painbother = NA if ref/dk
+                  table(clean_data$pain.bother, raw_data$ss5painbothr, exclude=NULL) #Check recoding
+                #FINAL CODING# clean_data$pain.bother: 1=yes, 2=no.
+          
+          #5. Functional limitations 
+                table(raw_data$mo5dbedhelp, exclude=NULL)
+                temp_iadl1<-ifelse(raw_data$mo5dbedhelp==1,0,ifelse(raw_data$mo5dbedhelp==2,1,NA)) #recode to 1/0/NA
+                  table(temp_iadl1, raw_data$mo5dbedhelp, exclude=NULL) #check coding 
+                
+                table(raw_data$mo5dinsdhelp, exclude=NULL)
+                temp_iadl2<-ifelse(raw_data$mo5dinsdhelp==1,0,ifelse(raw_data$mo5dinsdhelp==2,1,NA)) #recode to 1/0/NA
+                  table(temp_iadl2, raw_data$mo5dinsdhelp, exclude=NULL) #check coding 
+                  
+                table(raw_data$sc5deathelp, exclude=NULL)
+                temp_iadl3<-ifelse(raw_data$sc5deathelp==1,0,ifelse(raw_data$sc5deathelp==2,1,NA)) #recode to 1/0/NA
+                  table(temp_iadl3, raw_data$sc5deathelp, exclude=NULL) #check coding 
+                  
+                table(raw_data$sc5dbathhelp, exclude=NULL)
+                temp_iadl4<-ifelse(raw_data$sc5dbathhelp==1,0,ifelse(raw_data$sc5dbathhelp==2,1,NA)) #recode to 1/0/NA
+                  table(temp_iadl4, raw_data$sc5dbathhelp, exclude=NULL) #check coding 
+                  
+                table(raw_data$sc5dtoilhelp, exclude=NULL)
+                temp_iadl5<-ifelse(raw_data$sc5dtoilhelp==1,0,ifelse(raw_data$sc5dtoilhelp==2,1,NA)) #recode to 1/0/NA
+                  table(temp_iadl5, raw_data$sc5dtoilhelp, exclude=NULL) #check coding 
+                  
+                table(raw_data$sc5ddreshelp, exclude=NULL)
+                temp_iadl6<-ifelse(raw_data$sc5ddreshelp==1,0,ifelse(raw_data$sc5ddreshelp==2,1,NA)) #recode to 1/0/NA
+                  table(temp_iadl6, raw_data$sc5ddreshelp, exclude=NULL) #check coding 
+                  
+                temp_iadl.max<-pmax(temp_iadl1, temp_iadl2, temp_iadl3, temp_iadl4, temp_iadl5, temp_iadl6)
+                table(temp_iadl.max, exclude=NULL)
+                
+                temp_funclimits<-(temp_iadl.max==1 | temp_iadl1==1 | temp_iadl2==1 | temp_iadl3==1 | temp_iadl4==1 | temp_iadl5==1 | temp_iadl6==1)
+                  table(temp_funclimits, temp_iadl.max, exclude=NULL)
+                
+                clean_data$funclimits<-ifelse(temp_funclimits,1, ifelse(!temp_funclimits,0,NA)) #code clean functional limitations indicator outcome    
+                  table(clean_data$funclimits, temp_funclimits,exclude=NULL) #Check coding
+                #FINAL CODING# data_clean$funclimits: 1=help with >=1 IADL in last month, 0=no help with any IADLs in last month
+                  
+    #Kasper et al. 2018/Freedman et al. 2014 Six item score from 0-20
+                  
+        
+                  
 #Cleaning covariates
     #Age
       table(raw_data$r5d2intvrage, exclude=NULL) #No missing, "inapplicable" or weird values
