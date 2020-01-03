@@ -20,10 +20,8 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
 
 
 #Cleaning selection variable (derived dementia variable)
-    table(raw_data$r5demclas)
-    table(raw_data$r5demclas2)
-    summary(is.na(raw_data$r5demclas)) #No missing dementia classifications (Taylor dropped nursing home residents and others without SP questionnaire)
-    
+    table(raw_data$r5demclas,exclude=NULL)  #No missing dementia classifications (Taylor dropped nursing home residents and others without SP questionnaire)
+    table(raw_data$r5demclas2,exclude=NULL) #This is same variable after Taylor reclassified missing FQs as missing. Identical to previous variable because we dropped all these people anway.
     
     clean_data$dementia.status<-raw_data$r5demclas #Store dementia classification in clean dataset
     clean_data$dementia.bin<-ifelse(clean_data$dementia.status==1 | clean_data$dementia.status==2,1,0) #Create binary dementia variable in clean dataset
@@ -32,7 +30,7 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
     #FINAL CODING# clean_data$dementia.bin: 1=probable/possible dementia, 0=no dementia
           
 #Cleaning exposure variable 
-    table(raw_data$rl5dracehisp) 
+    table(raw_data$rl5dracehisp,exclude=NULL) 
     
     clean_data$race.eth<-ifelse(raw_data$rl5dracehisp==1 | raw_data$rl5dracehisp==2 ,raw_data$rl5dracehisp, #If white or black, clean is same as raw
                                   ifelse(raw_data$rl5dracehisp==4, 3, #if hispanic, code as "3"
@@ -43,11 +41,59 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
                               
 
 #Cleaning and deriving outcome variables 
-
-
+    #Schwartz et al. 2019 5 indicators mapping onto SF-12 domains
+          #1. Probable depression
+                table(raw_data$hc5depresan1, exclude=NULL)
+                    temp_depresan1<-ifelse(raw_data$hc5depresan1==-7|raw_data$hc5depresan1==-8,NA,raw_data$hc5depresan1-1) #recode 0-3 instead of 1-4
+                    table(temp_depresan1,raw_data$hc5depresan1,exclude=NULL) #check temp variable 
+                    
+                table(raw_data$hc5depresan2, exclude=NULL)
+                    temp_depresan2<-ifelse(raw_data$hc5depresan2==-7|raw_data$hc5depresan2==-8,NA,raw_data$hc5depresan2-1) #recode 0-3 instead of 1-4
+                    table(temp_depresan2,raw_data$hc5depresan2,exclude=NULL) #check temp variable 
+                
+                temp_dep.sum<-temp_depresan1+temp_depresan2 
+                temp_prob.dep<-(temp_dep.sum>=3 | temp_depresan1>=3 | temp_depresan2>=3) #create temp depression variable
+                    table(temp_prob.dep, temp_depresan1, temp_depresan2,exclude=NULL) #check coding of temp depression variable
+                
+                clean_data$prob.dep<-ifelse(temp_prob.dep,1, ifelse(!temp_prob.dep,0,NA)) #code clean depression indicator outcome    
+                    table(clean_data$prob.dep, temp_prob.dep,exclude=NULL) #Check coding
+                #FINAL CODING# clean_data$prob.dep: 1=probable depression (>=3 on PQ2), 0=no probable depression (0-2 on PQ2)
+                    
+                    
+          #2. Probable anxiety
+                table(raw_data$hc5depresan3, exclude=NULL)
+                temp_depresan3<-ifelse(raw_data$hc5depresan3==-7|raw_data$hc5depresan3==-8,NA,raw_data$hc5depresan3-1) #recode 0-3 instead of 1-4
+                    table(temp_depresan3,raw_data$hc5depresan3,exclude=NULL) #check temp variable 
+                    
+                table(raw_data$hc5depresan4, exclude=NULL)
+                temp_depresan4<-ifelse(raw_data$hc5depresan4==-7|raw_data$hc5depresan4==-8,NA,raw_data$hc5depresan4-1) #recode 0-3 instead of 1-4
+                    table(temp_depresan4,raw_data$hc5depresan4,exclude=NULL) #check temp variable 
+                    
+                temp_anx.sum<-temp_depresan3+temp_depresan4 
+                temp_prob.anx<-(temp_anx.sum>=3 | temp_depresan3>=3 | temp_depresan4>=3) #create temp depression variable
+                    table(temp_prob.anx, temp_depresan3, temp_depresan4,exclude=NULL) #check coding of temp depression variable
+                    
+                clean_data$prob.anx<-ifelse(temp_prob.anx,1, ifelse(!temp_prob.anx,0,NA)) #code clean depression indicator outcome    
+                    table(clean_data$prob.anx, temp_prob.anx,exclude=NULL) #Check coding
+                #FINAL CODING# clean_data$prob.anx: 1=probable anxiety (>=3 on GAD2), 0=no probable anxiety (0-2 on GAD2)
+                    
+                    
+          #3. Self-reported health
+                    
+                    
 #Cleaning covariates
-summary(is.na(raw_data$r5d2intvrage)) #No missing age
-summary(is.na(raw_data$r5dgender)) #No missing gender
+    #Age
+      table(raw_data$r5d2intvrage, exclude=NULL) #No missing, "inapplicable" or weird values
+    
+      clean_data$age.cat<-raw_data$r5d2intvrage #copy variables to clean datafrae
+      #FINAL CODING# clean_data$age.cat: 1=65-69, 2=70-74, 3=75-79, 4=80-84, 5=85-89, 6=90+
 
 
-data
+    #Gender
+      table(raw_data$r5dgender, exclude=NULL) #No missing or weird gender
+      
+      clean_data$female[raw_data$r5dgender==1]<-0 #Recode to female = 0 if male
+      clean_data$female[raw_data$r5dgender==2]<-1 #Recode to female = 1 if female
+      
+      table(clean_data$female, raw_data$r5dgender,exclude=NULL) #Check recoding
+      #FINAL CODING# clean_data$female: 1=female, 2=male
