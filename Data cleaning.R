@@ -179,7 +179,7 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
     #Age
       table(raw_data$r5d2intvrage, exclude=NULL) #No missing, "inapplicable" or weird values
     
-      clean_data$age.cat<-raw_data$r5d2intvrage #copy variables to clean datafrae
+      clean_data$age.cat<-raw_data$r5d2intvrage #copy variables to clean dataframe
       #FINAL CODING# clean_data$age.cat: 1=65-69, 2=70-74, 3=75-79, 4=80-84, 5=85-89, 6=90+
 
 
@@ -191,3 +191,8 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
       
       table(clean_data$female, raw_data$r5dgender,exclude=NULL) #Check recoding
       #FINAL CODING# clean_data$female: 1=female, 2=male
+
+      
+    test<-complete.cases(clean_data)
+    testfinal<-clean_data[test & clean_data$dementia.bin==1,]  
+    
