@@ -133,9 +133,48 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
                 #FINAL CODING# data_clean$funclimits: 1=help with >=1 IADL in last month, 0=no help with any IADLs in last month
                   
     #Kasper et al. 2018/Freedman et al. 2014 Six item score from 0-20
+                table(raw_data$wb5offelche1, exclude=NULL)
+                temp_feel1<-abs(raw_data$wb5offelche1-5) #reverse code from 0-5
+                temp_feel1<-ifelse(temp_feel1>5,NA,temp_feel1) #make proxy repsondents (N=442), ref/dk = missing
+                  table(temp_feel1,raw_data$wb5offelche1, exclude=NULL) #check work
+                
+  
+                table(raw_data$wb5offelche2, exclude=NULL)
+                temp_feel2<-abs(raw_data$wb5offelche2-5) #reverse code from 0-5
+                temp_feel2<-ifelse(temp_feel2>5,NA,temp_feel2) #make proxy repsondents (N=442), ref/dk = missing
+                  table(temp_feel2,raw_data$wb5offelche2, exclude=NULL) #check work
+                
+                table(raw_data$wb5offelche3, exclude=NULL)
+                temp_feel3<-abs(raw_data$wb5offelche3-5) #reverse code from 0-5
+                temp_feel3<-ifelse(temp_feel3>5,NA,temp_feel3) #make proxy repsondents (N=442), ref/dk = missing
+                  table(temp_feel3,raw_data$wb5offelche3, exclude=NULL) #check work
+                
+                table(raw_data$wb5offelche4, exclude=NULL)
+                temp_feel4<-abs(raw_data$wb5offelche4-5) #reverse code from 0-5
+                temp_feel4<-ifelse(temp_feel4>5,NA,temp_feel4) #make proxy repsondents (N=442), ref/dk = missing
+                  table(temp_feel4,raw_data$wb5offelche4, exclude=NULL) #check work
+                
+  
+                table(raw_data$wb5truestme1, exclude=NULL)
+                temp_feel5<-abs(raw_data$wb5truestme1-3) #reverse code from 0-5
+                temp_feel5<-ifelse(temp_feel5>2,NA,temp_feel5) #make proxy repsondents (N=442), ref/dk = missing
+                  table(temp_feel5,raw_data$wb5truestme1, exclude=NULL) #check work
                   
-        
+                table(raw_data$wb5truestme2, exclude=NULL)
+                temp_feel6<-abs(raw_data$wb5truestme2-3) #reverse code from 0-5
+                temp_feel6<-ifelse(temp_feel6>2,NA,temp_feel6) #make proxy repsondents (N=442), ref/dk = missing
+                  table(temp_feel6,raw_data$wb5truestme2, exclude=NULL) #check work
                   
+              temp_wbscore<-temp_feel1+temp_feel2+temp_feel3+temp_feel4+temp_feel5+temp_feel6 #add up scale items, missing sum if missing any                    
+              table(temp_wbscore,exclude=NULL)  
+              temp_wbscoremiss<-ifelse(is.na(temp_wbscore),1,0)
+              hist(temp_wbscore)
+              
+              clean_data$wbscore<-temp_wbscore #save coded variable
+              #FINAL CODING# clean_data$wbscore: continuous var, missing if any contributing item missing. 
+              
+              table(clean_data$race.eth,temp_wbscoremiss,clean_data$dementia.bin,exclude=NULL)
+
 #Cleaning covariates
     #Age
       table(raw_data$r5d2intvrage, exclude=NULL) #No missing, "inapplicable" or weird values
