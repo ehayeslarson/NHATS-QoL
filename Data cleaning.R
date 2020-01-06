@@ -31,6 +31,14 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
         #FINAL CODING# clean_data$dementia.bin: 1=probable/possible dementia, 0=no dementia
                   
     #Weights
+        summary(raw_data$w5anfinwgt0, exclude=NULL) #check weights, all non-zero weights
+        clean_data$w5anfinwgt0<-raw_data$w5anfinwgt0
+        
+        table(raw_data$w5varstrat, exclude=NULL)#check strata variable
+        clean_data$w5varstrat<-raw_data$w5varstrat
+        
+        table(raw_data$w5varunit, exclude=NULL) #check cluster variable
+        clean_data$w5varunit<-raw_data$w5varunit
           
 #Cleaning exposure variable 
     table(raw_data$rl5dracehisp,exclude=NULL) 
