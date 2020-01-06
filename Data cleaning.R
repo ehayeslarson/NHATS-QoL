@@ -20,14 +20,17 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
 
 
 #Cleaning selection variable (derived dementia variable)
-    table(raw_data$r5demclas,exclude=NULL)  #No missing dementia classifications (Taylor dropped nursing home residents and others without SP questionnaire)
-    table(raw_data$r5demclas2,exclude=NULL) #This is same variable after Taylor reclassified missing FQs as missing. Identical to previous variable because we dropped all these people anway.
-    
-    clean_data$dementia.status<-raw_data$r5demclas #Store dementia classification in clean dataset
-    clean_data$dementia.bin<-ifelse(clean_data$dementia.status==1 | clean_data$dementia.status==2,1,0) #Create binary dementia variable in clean dataset
-              table(clean_data$dementia.bin,clean_data$dementia.status,exclude=NULL) #Check creation of binary variable
-    #FINAL CODING# clean_data$dementia.status: 1=probably, 2=possible, 3=dementia. 
-    #FINAL CODING# clean_data$dementia.bin: 1=probable/possible dementia, 0=no dementia
+    #Dementia status
+        table(raw_data$r5demclas,exclude=NULL)  #No missing dementia classifications (Taylor dropped nursing home residents and others without SP questionnaire)
+        table(raw_data$r5demclas2,exclude=NULL) #This is same variable after Taylor reclassified missing FQs as missing. Identical to previous variable because we dropped all these people anway.
+        
+        clean_data$dementia.status<-raw_data$r5demclas #Store dementia classification in clean dataset
+        clean_data$dementia.bin<-ifelse(clean_data$dementia.status==1 | clean_data$dementia.status==2,1,0) #Create binary dementia variable in clean dataset
+                  table(clean_data$dementia.bin,clean_data$dementia.status,exclude=NULL) #Check creation of binary variable
+        #FINAL CODING# clean_data$dementia.status: 1=probably, 2=possible, 3=dementia. 
+        #FINAL CODING# clean_data$dementia.bin: 1=probable/possible dementia, 0=no dementia
+                  
+    #Weights
           
 #Cleaning exposure variable 
     table(raw_data$rl5dracehisp,exclude=NULL) 
@@ -193,6 +196,15 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
       #FINAL CODING# clean_data$female: 1=female, 2=male
 
       
-    test<-complete.cases(clean_data)
-    testfinal<-clean_data[test & clean_data$dementia.bin==1,]  
+    clean_data$comp.case.HRQoL<-complete.cases(clean_data[1:9])
+    clean_data$comp.case.WBQoL<-complete.cases(clean_data[c(1:8,10)])
+    clean_data$comp.case.all<-complete.cases(clean_data)
     
+
+    #------------------------------------------------------------------
+    # Save clean data and remove temporary objects
+    #------------------------------------------------------------------
+    save(clean_data, file="C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean.RData")
+
+    rm(list=ls(pattern="temp"))
+      
