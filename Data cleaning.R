@@ -204,8 +204,8 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
       #FINAL CODING# clean_data$female: 1=female, 2=male
 
       
-    clean_data$comp.case.HRQoL<-complete.cases(clean_data[1:9])
-    clean_data$comp.case.WBQoL<-complete.cases(clean_data[c(1:8,10)])
+    clean_data$comp.case.HRQoL<-complete.cases(clean_data[1:12])
+    clean_data$comp.case.WBQoL<-complete.cases(clean_data[c(1:7,13)])
     clean_data$comp.case.all<-complete.cases(clean_data)
     
 
