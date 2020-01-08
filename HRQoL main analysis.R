@@ -40,6 +40,10 @@ nhats_design<-svydesign(data=clean_data_hrqol, id=~w5varunit, strata=~w5varstrat
       svymean(~pain.bother, nhats_design)
       svymean(~funclimits, nhats_design)
 
+      
+#Check differences in proxy by race
+      CreateTableOne(vars="proxy", strata="race.eth", data=clean_data_hrqol, factorVars=c("race.eth","proxy"))
+     
 
 #Relative risk regression models
       
