@@ -30,6 +30,10 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
         #FINAL CODING# clean_data$dementia.status: 1=probably, 2=possible, 3=dementia. 
         #FINAL CODING# clean_data$dementia.bin: 1=probable/possible dementia, 0=no dementia
                   
+      #Proxy reporting
+          table(raw_data$is5resptype, exclude=NULL) #check respondent type
+          clean_data$proxy<-ifelse(raw_data$is5resptype==2,1,0) #create clean indicator for proxy respondent
+            table(clean_data$proxy,raw_data$is5resptype) #Check recoding              
     #Weights
         summary(raw_data$w5anfinwgt0, exclude=NULL) #check weights, all non-zero weights
         clean_data$w5anfinwgt0<-raw_data$w5anfinwgt0
@@ -204,8 +208,8 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
       #FINAL CODING# clean_data$female: 1=female, 2=male
 
       
-    clean_data$comp.case.HRQoL<-complete.cases(clean_data[1:12])
-    clean_data$comp.case.WBQoL<-complete.cases(clean_data[c(1:7,13)])
+    clean_data$comp.case.HRQoL<-complete.cases(clean_data[1:13])
+    clean_data$comp.case.WBQoL<-complete.cases(clean_data[c(1:8,14)])
     clean_data$comp.case.all<-complete.cases(clean_data)
     
 
