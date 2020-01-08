@@ -27,7 +27,7 @@ nhats_design<-svydesign(data=clean_data_hrqol, id=~w5varunit, strata=~w5varstrat
 #Sample descriptives
 
     #unweighted
-      catvars<-c("age.cat", "female", "race.eth")
+      catvars<-c("age.cat", "female", "race.eth", "prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
       CreateTableOne(vars=catvars, data=clean_data_hrqol, factorVars=catvars)
 
     #weighted
@@ -42,22 +42,38 @@ nhats_design<-svydesign(data=clean_data_hrqol, id=~w5varunit, strata=~w5varstrat
 
 
 #Relative risk regression models
+      
 outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
-models<-list(rep(NA,5))
-results<-data.frame(outcome=outcomes,black_RR=rep(NA,5), black_lci=rep(NA,5), black_uci=rep(NA,5), hispanic_RR=rep(NA,5), hispanic_lci=rep(NA,5), hispanic_uci=rep(NA,5), other_RR=rep(NA,5), other_lci=rep(NA,5), other_uci=rep(NA,5))
+results_weighted<-data.frame(outcome=outcomes,black_RR=rep(NA,5), black_lci=rep(NA,5), black_uci=rep(NA,5), hispanic_RR=rep(NA,5), hispanic_lci=rep(NA,5), hispanic_uci=rep(NA,5), other_RR=rep(NA,5), other_lci=rep(NA,5), other_uci=rep(NA,5))
+results_unweighted<-data.frame(outcome=outcomes,black_RR=rep(NA,5), black_lci=rep(NA,5), black_uci=rep(NA,5), hispanic_RR=rep(NA,5), hispanic_lci=rep(NA,5), hispanic_uci=rep(NA,5), other_RR=rep(NA,5), other_lci=rep(NA,5), other_uci=rep(NA,5))
 
+#weighted
+    for (i in 1:length(outcomes)){
+    outcome=colnames(clean_data_hrqol)[i+7]
+    model<-svyglm(as.formula(paste(outcome,"~as.factor(race.eth)+as.factor(age.cat)+female")), design=nhats_design, family=quasibinomial(link=log), start=c(-0.5,rep(0,9)))
+    results_weighted$black_RR[i]<-exp(coef(model)[2])
+    results_weighted$hispanic_RR[i]<-exp(coef(model)[3])
+    results_weighted$other_RR[i]<-exp(coef(model)[4])
+    results_weighted$black_lci[i]<-exp(confint(model)[2,1])
+    results_weighted$black_uci[i]<-exp(confint(model)[2,2])
+    results_weighted$hispanic_lci[i]<-exp(confint(model)[3,1])
+    results_weighted$hispanic_uci[i]<-exp(confint(model)[3,2])
+    results_weighted$other_lci[i]<-exp(confint(model)[4,1])
+    results_weighted$other_uci[i]<-exp(confint(model)[4,2])
+    }
+
+#unweighted
 for (i in 1:length(outcomes)){
-outcome=colnames(clean_data_hrqol)[i+7]
-model<-svyglm(as.formula(paste(outcome,"~as.factor(race.eth)+as.factor(age.cat)+female")), design=nhats_design, family=quasibinomial(link=log), start=c(-0.5,rep(0,9)))
-results$black_RR[i]<-exp(coef(model)[2])
-results$hispanic_RR[i]<-exp(coef(model)[3])
-results$other_RR[i]<-exp(coef(model)[4])
-results$black_lci[i]<-exp(confint(model)[2,1])
-results$black_uci[i]<-exp(confint(model)[2,2])
-results$hispanic_lci[i]<-exp(confint(model)[3,1])
-results$hispanic_uci[i]<-exp(confint(model)[3,2])
-results$other_lci[i]<-exp(confint(model)[4,1])
-results$other_uci[i]<-exp(confint(model)[4,2])
+  outcome=colnames(clean_data_hrqol)[i+7]
+  model<-glm(as.formula(paste(outcome,"~as.factor(race.eth)+as.factor(age.cat)+female")), data=clean_data_hrqol, family=binomial(link=log))
+  results_unweighted$black_RR[i]<-exp(coef(model)[2])
+  results_unweighted$hispanic_RR[i]<-exp(coef(model)[3])
+  results_unweighted$other_RR[i]<-exp(coef(model)[4])
+  results_unweighted$black_lci[i]<-exp(confint(model)[2,1])
+  results_unweighted$black_uci[i]<-exp(confint(model)[2,2])
+  results_unweighted$hispanic_lci[i]<-exp(confint(model)[3,1])
+  results_unweighted$hispanic_uci[i]<-exp(confint(model)[3,2])
+  results_unweighted$other_lci[i]<-exp(confint(model)[4,1])
+  results_unweighted$other_uci[i]<-exp(confint(model)[4,2])
 }
 
-results_t = setNames(data.frame(t(results[,-1])), results[,1])
