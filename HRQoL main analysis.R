@@ -169,16 +169,31 @@ test$outcome2[test$outcome=="poorhealth.bin"]<-"Fair/poor health"
 test$outcome2[test$outcome=="prob.dep"]<-"Screen+ depresson"
 test$outcome2[test$outcome=="prob.anx"]<-"Screen+ anxiety"
 
-test$race[test$race=="black_RR"] <- "Black"
-test$race[test$race=="hispanic_RR"] <- "Latino"
-test$race[test$race=="other_RR"] <- "Other"
+test$race[test$race=="black_RR"] <- "Black vs. White"
+test$race[test$race=="hispanic_RR"] <- "Latino vs. White"
+test$race[test$race=="other_RR"] <- "Other vs. White"
 
-test$race<-factor(test$race, levels=c("Black", "Latino", "Other"), labels=c("Black", "Latino", "Other"))
+test_black<-test[test$race=="Black vs. White",]
+test_black$lci<-test_black$black_lci
+test_black$uci<-test_black$black_uci
+test_latino<-test[test$race=="Latino vs. White",]
+test_latino$lci<-test_latino$hispanic_lci
+test_latino$uci<-test_latino$hispanic_uci
+test_other<-test[test$race=="Other vs. White",]
+test_other$lci<-test_other$other_lci
+test_other$uci<-test_other$other_uci
 
-results<-ggplot(data=test[test$race=="Black" | test$race=="Latino",], 
+forplot<-rbind(test_black[,c("outcome2", "race", "RR", "lci", "uci", "dementia")],
+               test_latino[,c("outcome2", "race", "RR", "lci", "uci", "dementia")],
+               test_other[,c("outcome2", "race", "RR", "lci", "uci", "dementia")])
+
+
+forplot$race<-factor(forplot$race, levels=c("Black vs. White", "Latino vs. White", "Other vs. White"), labels=c("Black vs. White", "Latino vs. White", "Other"))
+
+results<-ggplot(data=test[test$race=="Black vs. White" | test$race=="Latino",], 
             aes(x=outcome2, y=RR, fill=as.factor(dementia), group=dementia))+
             geom_col(position="dodge")+ xlab("HRQOL indicator")+
-            ylab("Prevalence ratio vs. white")+ facet_grid(.~race)+
+            ylab("Prevalence ratio (95% CI)")+ facet_grid(.~race)+
             scale_fill_discrete(name="", labels=c("No dementia", "Dementia"))+
             theme_bw()+
             theme(axis.text.x = element_text(angle = 90, size=12), 
@@ -186,6 +201,19 @@ results<-ggplot(data=test[test$race=="Black" | test$race=="Latino",],
                   axis.title.x = element_text(size=14), 
                   axis.title.y = element_text(size=14), 
             )
+
+
+results<-ggplot(data=forplot[forplot$race=="Black vs. White" | forplot$race=="Latino vs. White",])+
+  geom_pointrange(aes(x=outcome2, y=RR, ymin=lci, ymax=uci, group=as.factor(dementia), color=as.factor(dementia)), position=position_dodge(width=0.5), size=1, shape=15)+
+  xlab("HRQOL indicator")+ ylab("Prevalence ratio vs. white")+ facet_grid(.~race)+
+  scale_color_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
+  theme_bw()+
+  geom_hline(yintercept=1, colour="black", lwd=1) +
+  theme(axis.text.x = element_text(angle = 70, hjust=1, size=12), 
+        axis.text.y = element_text(size=12), 
+        axis.title.x = element_text(size=14), 
+        axis.title.y = element_text(size=14), 
+  )
 
 
 results
