@@ -204,8 +204,8 @@ results<-ggplot(data=test[test$race=="Black vs. White" | test$race=="Latino",],
 
 
 results<-ggplot(data=forplot[forplot$race=="Black vs. White" | forplot$race=="Latino vs. White",])+
-  geom_pointrange(aes(x=outcome2, y=RR, ymin=lci, ymax=uci, group=as.factor(dementia), color=as.factor(dementia)), position=position_dodge(width=0.5), size=1, shape=15)+
-  xlab("HRQOL indicator")+ ylab("Prevalence ratio vs. white")+ facet_grid(.~race)+
+  geom_pointrange(aes(x=outcome2, y=RR, ymin=lci, ymax=uci, group=as.factor(dementia), color=as.factor(dementia)), position=position_dodge(width=0.6), size=1, shape=15)+
+  xlab("HRQOL indicator")+ ylab("Prevalence ratio (95% CI)")+ facet_grid(.~race)+
   scale_color_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
   theme_bw()+
   geom_hline(yintercept=1, colour="black", lwd=1) +
