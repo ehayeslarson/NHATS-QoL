@@ -156,5 +156,47 @@ for (i in 1:length(outcomes)){
 # Export results #
 #------------------------------------------------------------------
 
+results_weighted$dementia<-1
+results_weighted_nodem$dementia<-0
+
+results_weighted_total<-rbind(results_weighted,results_weighted_nodem)
+
+test<-gather(data=results_weighted_total, key="race", value="RR", black_RR, hispanic_RR, other_RR)
+test$outcome2<-as.character(test$outcome)
+test$outcome2[test$outcome=="funclimits"]<-">=1 ADL limitation"
+test$outcome2[test$outcome=="pain.bother"]<-"Bothered by pain"
+test$outcome2[test$outcome=="poorhealth.bin"]<-"Fair/poor health"
+test$outcome2[test$outcome=="prob.dep"]<-"Screen+ depresson"
+test$outcome2[test$outcome=="prob.anx"]<-"Screen+ anxiety"
+
+test$race[test$race=="black_RR"] <- "Black"
+test$race[test$race=="hispanic_RR"] <- "Latino"
+test$race[test$race=="other_RR"] <- "Other"
+
+test$race<-factor(test$race, levels=c("Black", "Latino", "Other"), labels=c("Black", "Latino", "Other"))
+
+results<-ggplot(data=test[test$race=="Black" | test$race=="Latino",], 
+            aes(x=outcome2, y=RR, fill=as.factor(dementia), group=dementia))+
+            geom_col(position="dodge")+ xlab("HRQOL indicator")+
+            ylab("Prevalence ratio vs. white")+ facet_grid(.~race)+
+            scale_fill_discrete(name="", labels=c("No dementia", "Dementia"))+
+            theme_bw()+
+            theme(axis.text.x = element_text(angle = 90, size=12), 
+                  axis.text.y = element_text(size=12), 
+                  axis.title.x = element_text(size=14), 
+                  axis.title.y = element_text(size=14), 
+            )
+
+
+results
+ggsave("C:/Users/ehlarson/Box/NHATS/OUTPUT/RRgraph.jpg", 
+       plot=results,  dpi="retina")
+
+
+
+#------------------------------------------------------------------
+# Export results #
+#------------------------------------------------------------------
+
 results.list <- list("Unweighted_dem" = results_unweighted, "Unweighted_nodem" = results_unweighted_nodem, "Weighted_dem" = results_weighted, "Weighted_nodem" = results_weighted_nodem)
 write.xlsx(results.list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/RR_HRQOL_bydem.xlsx")
