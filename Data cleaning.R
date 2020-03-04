@@ -212,6 +212,9 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
     clean_data$comp.case.WBQoL<-complete.cases(clean_data[c(1:8,14)])
     clean_data$comp.case.all<-complete.cases(clean_data)
     
+    
+    table(clean_data$comp.case.HRQoL)
+    
 
     #------------------------------------------------------------------
     # Save clean data and remove temporary objects
@@ -219,4 +222,5 @@ clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned 
     save(clean_data, file="C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean.RData")
 
     rm(list=ls(pattern="temp"))
-      
+    
+    
