@@ -25,14 +25,6 @@ outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits
 
 #Relative risk regression models
 
-
-summary(model)
-
-summary(model)$coefficients[2,"Estimate"]
-      
-test<-as.double(coef(model))
-test[2]
-
 unwghtedmod<-function(indata){
         outresults<-data.frame(outcome=outcomes,
                                black_RR=rep(NA,5), hispanic_RR=rep(NA,5), other_RR=rep(NA,5), 
@@ -87,88 +79,41 @@ wghtedmod<-function(dem,weightvar){
 
 
 results_weighted_bl_dem<-wghtedmod(1, clean_data_hrqol$baseline.anwgt)      
-results_weighted_avg_dem<-wghtedmod(1, clean_data_hrqol$average.anwgt)      
+results_weighted_av_dem<-wghtedmod(1, clean_data_hrqol$average.anwgt)      
 results_weighted_rd_dem<-wghtedmod(1, clean_data_hrqol$analytic.wgt)      
 
 results_weighted_bl_nodem<-wghtedmod(0, clean_data_hrqol$baseline.anwgt)     
-results_weighted_avg_nodem<-wghtedmod(0, clean_data_hrqol$average.anwgt)     
+results_weighted_av_nodem<-wghtedmod(0, clean_data_hrqol$average.anwgt)     
 results_weighted_rd_nodem<-wghtedmod(0, clean_data_hrqol$analytic.wgt)     
 
 
 
 #------------------------------------------------------------------
-# Export results #
+# Format and export results #
 #------------------------------------------------------------------
 
-results_weighted$dementia<-1
-results_weighted_nodem$dementia<-0
-
-results_weighted_total<-rbind(results_weighted,results_weighted_nodem)
-
-test<-gather(data=results_weighted_total, key="race", value="RR", black_RR, hispanic_RR, other_RR)
-test$outcome2<-as.character(test$outcome)
-test$outcome2[test$outcome=="funclimits"]<-">=1 ADL limitation"
-test$outcome2[test$outcome=="pain.bother"]<-"Bothered by pain"
-test$outcome2[test$outcome=="poorhealth.bin"]<-"Fair/poor health"
-test$outcome2[test$outcome=="prob.dep"]<-"Screen+ depresson"
-test$outcome2[test$outcome=="prob.anx"]<-"Screen+ anxiety"
-
-test$race[test$race=="black_RR"] <- "Black vs. White"
-test$race[test$race=="hispanic_RR"] <- "Latino vs. White"
-test$race[test$race=="other_RR"] <- "Other vs. White"
-
-test_black<-test[test$race=="Black vs. White",]
-test_black$lci<-test_black$black_lci
-test_black$uci<-test_black$black_uci
-test_latino<-test[test$race=="Latino vs. White",]
-test_latino$lci<-test_latino$hispanic_lci
-test_latino$uci<-test_latino$hispanic_uci
-test_other<-test[test$race=="Other vs. White",]
-test_other$lci<-test_other$other_lci
-test_other$uci<-test_other$other_uci
-
-forplot<-rbind(test_black[,c("outcome2", "race", "RR", "lci", "uci", "dementia")],
-               test_latino[,c("outcome2", "race", "RR", "lci", "uci", "dementia")],
-               test_other[,c("outcome2", "race", "RR", "lci", "uci", "dementia")])
+res_tbls<-list(results_unweighted_dem=results_unweighted_dem, 
+               results_unweighted_nodem=results_unweighted_nodem,
+               results_weighted_bl_dem=results_weighted_bl_dem,
+               results_weighted_av_dem=results_weighted_av_dem,
+               results_weighted_rd_dem=results_weighted_rd_dem,
+               results_weighted_bl_nodem=results_weighted_bl_nodem,
+               results_weighted_av_nodem=results_weighted_av_nodem,
+               results_weighted_rd_nodem=results_weighted_rd_nodem)
 
 
-forplot$race<-factor(forplot$race, levels=c("Black vs. White", "Latino vs. White", "Other vs. White"), labels=c("Black vs. White", "Latino vs. White", "Other"))
+  for (i in 1:length(res_tbls) ){
+  
+  name<-names(res_tbls)[i]
+  
+  res_tbls[[i]][,"dementia"]<-ifelse(grepl("nodem", substr(name, 0,100000)),0,1)
+  res_tbls[[i]][,"weight"]<-paste(substr(name, 9, 19))
+  
+  }
+  
 
-results<-ggplot(data=test[test$race=="Black vs. White" | test$race=="Latino",], 
-            aes(x=outcome2, y=RR, fill=as.factor(dementia), group=dementia))+
-            geom_col(position="dodge")+ xlab("HRQOL indicator")+
-            ylab("Prevalence ratio (95% CI)")+ facet_grid(.~race)+
-            scale_fill_discrete(name="", labels=c("No dementia", "Dementia"))+
-            theme_bw()+
-            theme(axis.text.x = element_text(angle = 90, size=12), 
-                  axis.text.y = element_text(size=12), 
-                  axis.title.x = element_text(size=14), 
-                  axis.title.y = element_text(size=14), 
-            )
+results_all<-do.call(rbind,res_tbls)
 
 
-results<-ggplot(data=forplot[forplot$race=="Black vs. White" | forplot$race=="Latino vs. White",])+
-  geom_pointrange(aes(x=outcome2, y=RR, ymin=lci, ymax=uci, group=as.factor(dementia), color=as.factor(dementia)), position=position_dodge(width=0.6), size=1, shape=15)+
-  xlab("HRQOL indicator")+ ylab("Prevalence ratio (95% CI)")+ facet_grid(.~race)+
-  scale_color_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
-  theme_bw()+
-  geom_hline(yintercept=1, colour="black", lwd=1) +
-  theme(axis.text.x = element_text(angle = 70, hjust=1, size=12), 
-        axis.text.y = element_text(size=12), 
-        axis.title.x = element_text(size=14), 
-        axis.title.y = element_text(size=14), 
-  )
-
-
-results
-ggsave("C:/Users/ehlarson/Box/NHATS/OUTPUT/RRgraph.jpg", 
-       plot=results,  dpi="retina")
-
-
-
-#------------------------------------------------------------------
-# Export results #
-#------------------------------------------------------------------
-
-results.list <- list("Unweighted_dem" = results_unweighted, "Unweighted_nodem" = results_unweighted_nodem, "Weighted_dem" = results_weighted, "Weighted_nodem" = results_weighted_nodem)
-write.xlsx(results.list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/RR_HRQOL_bydem.xlsx")
+save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/RR_HRQOL_pooled.Rdata")
+write.xlsx(results_all, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/RR_HRQOL_pooled.xlsx")
