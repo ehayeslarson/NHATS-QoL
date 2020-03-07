@@ -20,14 +20,18 @@ clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
 clean_data_hrqol_dem<-clean_data[clean_data$comp.case.HRQoL==1 & clean_data$dementia.bin==1,]
 clean_data_hrqol_nodem<-clean_data[clean_data$comp.case.HRQoL==1 & clean_data$dementia.bin==0,]
 
+#Keep baseline observation
+clean_data_hrqol_baseline<-clean_data_hrqol[clean_data_hrqol$first.obs==1,]
 
 # ---Unweighted analyses--- #
 
 #Sample descriptives
 
 catvars<-c("age.cat", "female", "race.eth", "prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
-allvars<-c(catvars, )
-CreateTableOne(vars=catvars, data=clean_data_hrqol_dem, factorVars=catvars)
+allvars<-c(catvars)
+test<-CreateTableOne(vars=catvars ,strata=c( "race.eth","dementia.bin"), data=clean_data_hrqol_baseline, test=F,  factorVars=catvars)
+test
+test$MetaData
 
 #Check differences in proxy by race
 CreateTableOne(vars="proxy", strata="race.eth", data=clean_data_hrqol_dem, factorVars=c("race.eth","proxy"))
