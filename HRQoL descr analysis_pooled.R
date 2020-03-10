@@ -16,43 +16,71 @@ p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "gee", "wgeesel",
 # Load clean data#
 #------------------------------------------------------------------
 load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
-clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
-clean_data_hrqol_dem<-clean_data[clean_data$comp.case.HRQoL==1 & clean_data$dementia.bin==1,]
-clean_data_hrqol_nodem<-clean_data[clean_data$comp.case.HRQoL==1 & clean_data$dementia.bin==0,]
 
 #Keep baseline observation
 clean_data_hrqol_baseline<-clean_data_hrqol[clean_data_hrqol$first.obs==1,]
 
+
+catvars<-c("age.cat", "female","edu.cat", "resid.care", "cens.div", "born.us", 
+           "proxy", "proxy.fam", "sr.highbp","sr.diabetes","sr.stroke", "sr.cancer")
+catvar_names<-c("Age (years)", "Female", "Education attained", 
+                "Residential setting", "Census region", "Born in US", 
+                "Proxy answered survey", "Familiarity of proxy with routine", 
+                "Self-reported high blood pressure","Self-reported diabetes",
+                "Self-reported stroke", "Self-reported cancer")
+
+
+
+#------------------------------------------------------------------
 # ---Unweighted analyses--- #
+#------------------------------------------------------------------
+  
+    
+    T1results_unweighted<-matrix(nrow=1, ncol=5)
+    T1results_unweighted[1,]<- c("Race/ethnicity total",table(clean_data_hrqol_baseline$race.eth))
+    
+    for (i in 1:length(catvars)){
+    tab.to.add<-table(eval(parse_expr(paste0("clean_data_hrqol_baseline$",catvars[i])))
+                      ,clean_data_hrqol_baseline$race.eth, exclude=NULL)
+    labs<-as.character(rownames(tab.to.add))
+    T1results_unweighted<-rbind(T1results_unweighted, c(paste(catvar_names[i]),rep(NA,4)))
+    T1results_unweighted<-rbind(T1results_unweighted,cbind(labs, tab.to.add))
+    }
+    
+    colnames(T1results_unweighted)<-c("Variable name", "Non-Latino white", "Black", "Latino", "Other")
+    rownames(T1results_unweighted)<-NULL
+    T1results_unweighted[is.na(T1results_unweighted[,1]),"Variable name"]<-"Missing"
+    
 
-#Sample descriptives
-
-catvars<-c("age.cat", "female", "race.eth", "prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
-allvars<-c(catvars)
-test<-CreateTableOne(vars=catvars ,strata=c( "race.eth","dementia.bin"), data=clean_data_hrqol_baseline, test=F,  factorVars=catvars)
-test
-test$MetaData
-
-#Check differences in proxy by race
-CreateTableOne(vars="proxy", strata="race.eth", data=clean_data_hrqol_dem, factorVars=c("race.eth","proxy"))
-
-
-#Check differences in proxy by race
-CreateTableOne(vars="proxy", strata="race.eth", data=clean_data_hrqol, factorVars=c("race.eth","proxy"))
-
-
-
-
+#------------------------------------------------------------------
 # ---Weighted analyses--- #
+#------------------------------------------------------------------
+  nhats_design<-svydesign(data=clean_data_hrqol_baseline, id=~cluster, strata=~stratum, weights=~analytic.wgt, nest=T)
+  
+  
+  svytable(~edu.cat+race.eth, nhats_design, exclude=NULL, round=T, na.action=na.pass, addNA=TRUE)
+  
+  
+  T1results_weighted<-matrix(nrow=1, ncol=5)
+  T1results_weighted[1,]<- c("Race/ethnicity total",
+                             svytable(~race.eth, nhats_design, exclude=NULL, round=T, 
+                                      na.action=na.pass, addNA=TRUE))
+  
+  for (i in 1:length(catvars)){
+    tab.to.add<-svytable(~eval(parse_expr(paste0("clean_data_hrqol_baseline$",catvars[i])))+race.eth, 
+                         nhats_design, exclude=NULL, round=T, na.action=na.pass, addNA=TRUE)
+    labs<-as.character(rownames(tab.to.add))
+    T1results_weighted<-rbind(T1results_weighted, c(paste(catvar_names[i]),rep(NA,4)))
+    T1results_weighted<-rbind(T1results_weighted,cbind(labs, tab.to.add))
+  }
+  
+  colnames(T1results_weighted)<-c("Variable name", "Non-Latino white", "Black", "Latino", "Other")
+  rownames(T1results_weighted)<-NULL
+  T1results_weighted[is.na(T1results_weighted[,1]),"Variable name"]<-"Missing"
 
-
-
-#weighted
-svymean(~female, nhats_design_nodem)
-svymean(~as.factor(race.eth), nhats_design_nodem)
-svymean(~as.factor(age.cat), nhats_design_nodem)
-svymean(~prob.dep, nhats_design_nodem)
-svymean(~prob.anx, nhats_design_nodem)
-svymean(~poorhealth.bin, nhats_design_nodem)
-svymean(~pain.bother, nhats_design_nodem)
-svymean(~funclimits, nhats_design_nodem)
+#------------------------------------------------------------------
+# Save tables #
+#------------------------------------------------------------------
+  T1.list <- list("Unweighted" = T1results_unweighted, "Weighted" = T1results_weighted)
+  write.xlsx(T1.list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/Table1.xlsx")
+  
