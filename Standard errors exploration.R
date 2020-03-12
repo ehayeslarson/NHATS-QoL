@@ -17,7 +17,7 @@ p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "survey", "tableo
 load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean.RData")
 
 #------------------------------------------------------------------
-# Analysis among dementa = 1 #
+# Single wave results
 #------------------------------------------------------------------
 
 #Subset to complete cases with prob/poss dementia for all HRQoL vars
@@ -86,6 +86,7 @@ glmfxn<-function(indata, robust){
   
   for (i in 1:length(outcomes)){
     outcome<-outcomes[i]
+    
     model<-glm(as.formula(paste(outcome,"~as.factor(race.eth)+as.factor(age.cat)+female")), 
                data=indata, weights=scaled.wt, family=poisson(link=log))
     summary(model)
@@ -93,7 +94,8 @@ glmfxn<-function(indata, robust){
     #calculate robust SE
     cov.m1 <- vcovHC(model, type = "HC0")
     robust.std.err <- sqrt(diag(cov.m1))
-    robust.std.err 
+    robust.std.err
+    
     for (j in 2:4){
       outresults[i,j] <- exp(coef(model)[j])
       outresults[i,j+3] <- if (robust==1){robust.std.err[j]} else {summary(model)$coefficients[j,"Std. Error"]}
@@ -138,7 +140,6 @@ results_gee_dem<-geefxn(clean_data_hrqol_dem)
 results_gee_nodem<-geefxn(clean_data_hrqol_nodem)    
 
 
-
 #Comparing SEs.
 black_SEratio_survwt<-results_survey_dem$black_ser/results_weighted_dem$black_ser
 black_SEratio_survglmmodel<-results_survey_dem$black_ser/results_modelse_dem$black_ser
@@ -151,6 +152,7 @@ blackSEratios<-cbind(black_SEratio_survwt,black_SEratio_survglmmodel,
 
 hispanic_SEratio_survwt<-results_survey_dem$hispanic_ser/results_weighted_dem$hispanic_ser
 hispanic_SEratio_survglmmodel<-results_survey_dem$hispanic_ser/results_modelse_dem$hispanic_ser
+hispanic_SEratio_survglmrobust<-results_survey_dem$hispanic_ser/results_robustse_dem$hispanic_ser
 hispanic_SEratio_survgee<-results_survey_dem$hispanic_ser/results_gee_dem$hispanic_ser
 
 hispanicSEratios<-cbind(hispanic_SEratio_survwt,hispanic_SEratio_survglmmodel, 
@@ -216,6 +218,7 @@ blackSEratios<-cbind(black_SEratio_survwt,black_SEratio_survglmmodel,
 
 hispanic_SEratio_survwt<-results_survey_nodem$hispanic_ser/results_weighted_nodem$hispanic_ser
 hispanic_SEratio_survglmmodel<-results_survey_nodem$hispanic_ser/results_modelse_nodem$hispanic_ser
+hispanic_SEratio_survglmrobust<-results_survey_nodem$hispanic_ser/results_robustse_nodem$hispanic_ser
 hispanic_SEratio_survgee<-results_survey_nodem$hispanic_ser/results_gee_nodem$hispanic_ser
 
 hispanicSEratios<-cbind(hispanic_SEratio_survwt,hispanic_SEratio_survglmmodel, 
@@ -266,3 +269,110 @@ est.ratios_nodem<-cbind(blackestratios, hispanicestratios, otherestratios)
 est.ratios_nodem
 
 
+#------------------------------------------------------------------
+# Save tables #
+#------------------------------------------------------------------
+SE.list <- list("Dementia" = SE.ratios_dem, "No dementia" = SE.ratios_nodem)
+write.xlsx(SE.list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/SE exploration.xlsx")
+
+
+
+
+
+
+#------------------------------------------------------------------
+# Pooled data
+#------------------------------------------------------------------
+load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
+
+#Create scaled weight:
+scalefactor<-nrow(clean_data_hrqol)/sum(clean_data_hrqol$baseline.anwgt)
+clean_data_hrqol$scaled.wt<-clean_data_hrqol$baseline.anwgt*scalefactor
+
+
+clean_data_hrqol_dem<-clean_data_hrqol[clean_data_hrqol$dementia.bin==1,]
+clean_data_hrqol_nodem<-clean_data_hrqol[clean_data_hrqol$dementia.bin==0,]
+
+
+
+
+
+model<-geeglm(as.formula(paste("prob.dep","~as.factor(race.eth)+as.factor(age.cat)+female")), 
+              id=spid, data=clean_data_hrqol_dem, corstr="exchangeable", weights=scaled.wt, family=poisson(link=log))
+summary(model)
+
+
+nhats_design_dem2<-svydesign(data=clean_data_hrqol[clean_data_hrqol$dementia.bin==1,], 
+                             id=~cluster, strata=~stratum, weights=~baseline.anwgt, nest=T)
+
+model2<-svyglm(as.formula(paste("prob.dep","~as.factor(race.eth)+as.factor(age.cat)+female")), 
+               design=nhats_design_dem2, family=poisson(link=log))
+summary(model2)
+
+
+nhats_design_dem3<-svydesign(data=clean_data_hrqol[clean_data_hrqol$dementia.bin==1,], 
+                             ids=~cluster+spid, strata=~stratum, weights=~baseline.anwgt, nest=T)
+model3<-svyglm(as.formula(paste("prob.dep","~as.factor(race.eth)+as.factor(age.cat)+female")), 
+               design=nhats_design_dem3, family=poisson(link=log))
+summary(model3)
+
+
+model4<-glm(as.formula(paste("prob.dep","~as.factor(race.eth)+as.factor(age.cat)+female")), 
+            data=clean_data_hrqol_dem, weights=scaled.wt, family=poisson(link=log))
+
+cov.m1 <- vcovHC(model4, type = "HC0")
+robust.std.err <- sqrt(diag(cov.m1))
+
+r.est <- cbind(Estimate= coef(model4), "Robust SE" = robust.std.err,
+               "Pr(>|z|)" = 2 * pnorm(abs(coef(model4)/robust.std.err), lower.tail=FALSE),
+               LL = coef(model4) - 1.96 * robust.std.err,
+               UL = coef(model4) + 1.96 * robust.std.err)
+
+r.est
+
+
+
+#Unweighted
+model<-geeglm(as.formula(paste("prob.dep","~as.factor(race.eth)+as.factor(age.cat)+female")), 
+              id=spid, data=clean_data_hrqol_dem, corstr="independence", family=poisson(link=log))
+summary(model)
+
+nullweight<-rep(1,nrow(clean_data_hrqol_dem))
+nhats_design_dem2<-svydesign(data=clean_data_hrqol_dem, 
+                             id=~spid, strata=NULL, weights=~nullweight, nest=F)
+model2<-svyglm(as.formula(paste("prob.dep","~as.factor(race.eth)+as.factor(age.cat)+female")), 
+               design=nhats_design_dem2, family=poisson(link=log))
+summary(model2)
+
+
+
+model4<-glm(as.formula(paste("prob.dep","~as.factor(race.eth)+as.factor(age.cat)+female")), 
+            data=clean_data_hrqol_dem, family=poisson(link=log))
+
+cov.m1 <- vcovHC(model4, type = "HC0")
+robust.std.err <- sqrt(diag(cov.m1))
+r.est <- cbind(Estimate= coef(model4), "Robust SE" = std.err,
+               "Pr(>|z|)" = 2 * pnorm(abs(coef(model4)/std.err), lower.tail=FALSE),
+               LL = coef(model4) - 1.96 * std.err,
+               UL = coef(model4) + 1.96 * std.err)
+
+r.est
+
+
+
+install.packages("ClusterBootstrap")
+library(ClusterBootstrap)
+
+
+test<-clusbootglm(
+  as.formula(paste("prob.dep","~as.factor(race.eth)+as.factor(age.cat)+female")),
+  data=clean_data_hrqol_dem,
+  clusterid=spid,
+  family = poisson (link=log),
+  B = 5,
+  confint.level = 0.95,
+  n.cores = 1
+)
+
+summary(test)
