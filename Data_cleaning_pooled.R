@@ -287,10 +287,22 @@ clean_data$edu.cat <- ordered(clean_data$edu.cat,
                                           "9: MASTERS, PROFESSIONAL, OR DOCTORAL DEGREE"))
 table(clean_data$edu.cat,raw_data$bl_higstschl, exclude=NULL)
 
-clean_data$edu.bin [raw_data$bl_higstschl==1 | raw_data$bl_higstschl==2 | raw_data$bl_higstschl==3 | raw_data$bl_higstschl==4]<-0 #No education - HS diploma
-clean_data$edu.bin [raw_data$bl_higstschl==5 | raw_data$bl_higstschl==6 | raw_data$bl_higstschl==7 | raw_data$bl_higstschl==8 | raw_data$bl_higstschl==9]<-1 #HS diploma +
-clean_data$edu.bin [raw_data$bl_higstschl==-7 | raw_data$bl_higstschl==-8]<-NA
-table(clean_data$edu.bin, exclude=NULL)
+
+clean_data$edu.7cat [raw_data$bl_higstschl %in% c(1:4,6)]<-raw_data$bl_higstschl[raw_data$bl_higstschl %in% c(1:4,6)]
+clean_data$edu.7cat [raw_data$bl_higstschl %in% c(5,7)]<-7
+clean_data$edu.7cat [raw_data$bl_higstschl %in% c(8,9)]<-8
+clean_data$edu.7cat [raw_data$bl_higstschl==-7 | raw_data$bl_higstschl==-8]<-NA
+clean_data$edu.7cat<-ordered(clean_data$edu.7cat,
+                             levels=c(1:4,6:8),
+                             labels=c("1: No school completed", 
+                                      "2: 1st-8th grade", 
+                                      "3: 9th-12th grade", 
+                                      "4: High school diploma or equivalent",
+                                      "6: Some college, but no degree",
+                                      "7: Associate's degree or certificate/diploma beyond high school",
+                                      "8: Bachelor's degree or higher"))
+
+table(clean_data$edu.cat,clean_data$edu.7cat, exclude=NULL)
 
 table(clean_data$edu.cat, clean_data$edu.bin, exclude=NULL)
 
@@ -312,6 +324,13 @@ clean_data$cens.div<-ordered(clean_data$cens.div,
                                         "7: South Region: West South Central Division", "8: West Region: Mountain Division", "9: West Region: Pacific Division"))
 table(clean_data$cens.div, raw_data$censdiv, exclude=NULL)
 
+
+clean_data$cens.area<-as.factor(ifelse(raw_data$censdiv %in% c(1,2),"Northeast region",
+                              ifelse(raw_data$censdiv %in% c(3,4),"Midwest region",
+                                     ifelse(raw_data$censdiv %in% c(5,6,7), "South region",
+                                            ifelse(raw_data$censdiv %in% c(8,9),"West region", "Missing")))))
+
+table(clean_data$cens.div, clean_data$cens.area, exclude=NULL)
 
 #Born in US
 table(raw_data$bl_borninus, exclude=NULL)
