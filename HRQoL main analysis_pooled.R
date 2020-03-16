@@ -21,6 +21,7 @@ clean_data_hrqol_dem<-clean_data[clean_data$comp.case.HRQoL==1 & clean_data$deme
 clean_data_hrqol_nodem<-clean_data[clean_data$comp.case.HRQoL==1 & clean_data$dementia.bin==0,]
 outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
 
+
 # ---Unweighted analyses--- #
 
 #Relative risk regression models
@@ -30,12 +31,14 @@ unwghtedmod<-function(indata){
                                black_est=rep(NA,5), hispanic_est=rep(NA,5), other_est=rep(NA,5), 
                                black_lci=rep(NA,5), hispanic_lci=rep(NA,5),  other_lci=rep(NA,5),
                                black_uci=rep(NA,5),  hispanic_uci=rep(NA,5), other_uci=rep(NA,5))
-        
+
           for (i in 1:length(outcomes)){
                         outcome<-outcomes[i]
             
-            model<-geeglm(as.formula(paste(outcome,"~as.factor(race.eth)+as.factor(age.cat)+female")), 
+            model<-geeglm(as.formula(paste(outcome,"~as.factor(race.eth)+factor(age.cat, ordered=F)+female")), 
                        id=spid, data=indata, corstr="exchangeable", family=poisson(link=log))
+            
+            print(summary(model))
             
             for (j in 2:4){
               outresults[i,j] <- exp(coef(model)[j])
@@ -43,7 +46,7 @@ unwghtedmod<-function(indata){
               outresults[i,j+6] <- exp(coef(model)[j]+1.96*summary(model)$coefficients[j,"Std.err"])
             }
           }
-        return(outresults)
+        return(outresults=outresults)
       }
       
 
@@ -62,8 +65,9 @@ unwghtedmod<-function(indata){
         for (i in 1:length(outcomes)){
           outcome<-outcomes[i]
           
-          model<-geeglm(as.formula(paste(outcome,"~as.factor(race.eth)+as.factor(age.cat)+female")), 
+          model<-geeglm(as.formula(paste(outcome,"~as.factor(race.eth)+factor(age.cat, ordered=F)+female")), 
                         id=spid, data=indata, corstr="exchangeable", family=poisson(link=identity))
+          print(summary(model))
           
           for (j in 2:4){
             outresults[i,j] <- coef(model)[j]
@@ -92,9 +96,10 @@ wghtedmod<-function(dem,weightvar){
   for (i in 1:length(outcomes)){
     outcome<-outcomes[i]
     
-    model<-geeglm(as.formula(paste(outcome,"~as.factor(race.eth)+as.factor(age.cat)+female")), 
+    model<-geeglm(as.formula(paste(outcome,"~as.factor(race.eth)+factor(age.cat, ordered=F)+female")), 
                id=spid, data=clean_data_hrqol[clean_data_hrqol$dementia.bin==dem,], 
                corstr="exchangeable", family=poisson(link=log), weights=weightvar[clean_data_hrqol$dementia.bin==dem])
+    print(summary(model))
     
     for (j in 2:4){
       outresults[i,j] <- exp(coef(model)[j])
@@ -127,6 +132,7 @@ wghtedmodRD<-function(dem,weightvar){
     model<-geeglm(as.formula(paste(outcome,"~as.factor(race.eth)+as.factor(age.cat)+female")), 
                   id=spid, data=clean_data_hrqol[clean_data_hrqol$dementia.bin==dem,], 
                   corstr="exchangeable", family=poisson(link=identity), weights=weightvar[clean_data_hrqol$dementia.bin==dem])
+    print(summary(model))
     
     for (j in 2:4){
       outresults[i,j] <- coef(model)[j]
