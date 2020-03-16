@@ -63,10 +63,12 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   #Analytic Weight
   summary(raw_data$anfinwgt0, exclude=NULL) #check weights, all non-zero weights
   clean_data$analytic.wgt<-raw_data$anfinwgt0
-
+  clean_data$analytic.wgt_scaled<-clean_data$analytic.wgt/sum(clean_data$analytic.wgt)
+  
   #Baseline analytic weight
   summary(raw_data$bl_anfinwgt0, exclude=NULL)
   clean_data$baseline.anwgt<-raw_data$bl_anfinwgt0 
+  clean_data$baseline.anwgt_scaled<-clean_data$baseline.anwgt/sum(clean_data$baseline.anwgt)
   
   #average analytic weight
   mean_by_person <- raw_data %>% 
@@ -74,6 +76,7 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
     summarize(average.anwgt = mean(anfinwgt0), min.anwgt = min(anfinwgt0), max.anwgt = max(anfinwgt0))
   mean_by_person$diff.anwgt <- (mean_by_person$max.anwgt - mean_by_person$min.anwgt)
   clean_data<- merge(clean_data, mean_by_person, by="spid")
+  clean_data$average.anwgt_scaled<-clean_data$average.anwgt/sum(clean_data$average.anwgt)
   
   summary(clean_data$diff.anwgt)
   summary(clean_data$max.anwgt)
