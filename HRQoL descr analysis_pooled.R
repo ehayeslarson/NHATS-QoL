@@ -32,7 +32,6 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
                 "Self-reported stroke", "Self-reported cancer", "Dementia")
 
 
-
 #------------------------------------------------------------------
 # ---Unweighted analyses--- #
 #------------------------------------------------------------------
