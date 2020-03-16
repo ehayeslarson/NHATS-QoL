@@ -236,9 +236,9 @@ ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" |
   )
 }
 
-res_un_RR<-plotres("unweighted_")
-res_bl_RR<-plotres("weighted_bl")
-res_av_RR<-plotres("weighted_av")
+res_un_RR<-plotresRR("unweighted_")
+res_bl_RR<-plotresRR("weighted_bl")
+res_av_RR<-plotresRR("weighted_av")
 
 
 plotresRD<-function(wt){
@@ -262,6 +262,15 @@ plotresRD<-function(wt){
 res_un_RD<-plotresRD("unweighted_")
 res_bl_RD<-plotresRD("weighted_bl")
 res_av_RD<-plotresRD("weighted_av")
+
+
+figures<-list(res_un_RR=res_un_RR, res_av_RR=res_av_RR, res_bl_RR=res_bl_RR, 
+              res_un_RD=res_un_RD, res_av_RD=res_av_RD, res_bl_RD=res_bl_RD)
+
+for (i in 1:length(figures)){
+  ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/",names(figures)[i],".jpg"), 
+         plot=eval(parse_expr(names(figures[i]))), dpi="retina")
+}
 
 
 save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/RR_HRQOL_pooled.Rdata")
