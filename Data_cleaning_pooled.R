@@ -58,8 +58,8 @@ table(raw_data$resptype, exclude=NULL) #check respondent type
 clean_data$proxy<-ifelse(raw_data$resptype==2,1,0) #create clean indicator for proxy respondent
 table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = SP, 1 = Proxy                
 
-#Weights -- talk to EHL before adding weight variables 
 
+#Weights 
   #Analytic Weight
   summary(raw_data$anfinwgt0, exclude=NULL) #check weights, all non-zero weights
   clean_data$analytic.wgt<-raw_data$anfinwgt0
@@ -81,13 +81,11 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   summary(clean_data$diff.anwgt)
   summary(clean_data$max.anwgt)
   
-#EHL checking
-  clean_data2<- clean_data %>% mutate(bigwtchange=(diff.anwgt>5099))
-  count_obs<-clean_data2 %>% group_by(bigwtchange) %>%count(spid)
-  summary(count_obs  %>% filter(bigwtchange==1) %>% select(n))
-  summary(count_obs  %>% filter(bigwtchange==0) %>% select(n))
-  
-     
+  #EHL checking
+    # clean_data2<- clean_data %>% mutate(bigwtchange=(diff.anwgt>5099))
+    # count_obs<-clean_data2 %>% group_by(bigwtchange) %>%count(spid)
+    # summary(count_obs  %>% filter(bigwtchange==1) %>% select(n))
+    # summary(count_obs  %>% filter(bigwtchange==0) %>% select(n))
   
   #Stratum variable
   table(raw_data$varstrat, exclude=NULL)#check strata variable
@@ -99,9 +97,9 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   
   
   #EHL checking if people change strata
-  n_ids<-clean_data %>% distinct(spid) %>% count()
-  n_strata <- clean_data %>% group_by(spid) %>% distinct(stratum)
-  nrow(clean_data[clean_data$stratum!=clean_data$baseline.stratum,])
+      # n_ids<-clean_data %>% distinct(spid) %>% count()
+      # n_strata <- clean_data %>% group_by(spid) %>% distinct(stratum)
+      # nrow(clean_data[clean_data$stratum!=clean_data$baseline.stratum,])
   
   #Cluster variable
   table(raw_data$varunit, exclude=NULL) #check cluster variable
@@ -113,8 +111,8 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   clean_data$baseline.cluster<-raw_data$bl_varunit
 
   #EHL checking if people change strata
-  n_clusters <- clean_data %>% group_by(spid) %>% distinct(cluster)
-  nrow(clean_data[clean_data$cluster!=clean_data$baseline.cluster,])
+    # n_clusters <- clean_data %>% group_by(spid) %>% distinct(cluster)
+    # nrow(clean_data[clean_data$cluster!=clean_data$baseline.cluster,])
   
   
 #Cleaning exposure variable. From User guide: At round 5, the variable rl5dracehisp was derived from the Round 1 
@@ -447,6 +445,13 @@ clean_data$ad8.demflag<- raw_data$ad8_flag
   table(raw_data$ad8_score, clean_data$ad8.score, exclude=NULL)
   table(clean_data$ad8.demflag, raw_data$round,exclude=NULL)
   table(clean_data$ad8.demflag, clean_data$ad8.score, exclude=NULL)
+  
+  
+#Proxy says can ask SP cognitive items
+  table(raw_data$speaktosp, exclude=NULL)
+  clean_data$speaktosp<-ifelse(raw_data$speaktosp==-1,NA,raw_data$speaktosp)
+  
+  table(clean_data$speaktosp, raw_data$speaktosp, exclude=NULL)
   
 #Orientation Domain: sum of date recall and pres/vp name tests
 table(raw_data$datena_score, exclude=NULL)
