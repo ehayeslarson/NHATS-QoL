@@ -261,13 +261,6 @@ write.xlsx(results_all, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/RR_HRQOL_pool
 # Standardized predicted prevalences
 #------------------------------------------------------------------
 
-pred_prev_dem<-
-pred_prev_nodem<-data.frame(outcome=outcomes, white_est=rep(NA,5), white_LCI=rep(NA,5), white_UCI=rep(NA,5), 
-                            black_est=rep(NA,5), black_LCI=rep(NA,5), black_UCI=rep(NA,5), 
-                            latino_est=rep(NA,5), latino_LCI=rep(NA,5), latino_UCI=rep(NA,5), 
-                            other_est=rep(NA,5), other_LCI=rep(NA,5), other_UCI=rep(NA,5))
-
-
 pred_prevs<-function(modelvar){
   
   outset<-data.frame(outcome=outcomes, white_est=rep(NA,5), white_LCI=rep(NA,5), white_UCI=rep(NA,5), 
@@ -339,35 +332,47 @@ pred_forplot$race[pred_forplot$race=="latino_est"] <- "Latino"
 pred_forplot$race[pred_forplot$race=="other_est"] <- "Other"
 
 
-  ggplot(data=pred_forplot[pred_forplot$race %in% c("White", "Black", "Latino"),])+
+pred_prev_blwt_dem_byrace<-ggplot(data=pred_forplot[pred_forplot$race %in% c("White", "Black", "Latino"),])+
     geom_col(aes(x=race, y=value, group=factor(dementia), 
-                        fill=factor(dementia)), width=0.5, position=position_dodge(width=.5))+
-    geom_errorbar(aes(x=race, ymin=LCI, ymax=UCI, group=factor(dementia)), width=0.25, position=position_dodge(width=0.5))+
-    xlab("Race/ethnicity")+ ylab("Standardized predicted prevalence (95% CI)")+ facet_grid(.~outcome2)+
+                        fill=factor(dementia)), width=0.75, position=position_dodge(width=.75))+
+    geom_errorbar(aes(x=race, ymin=LCI, ymax=UCI, group=factor(dementia)), width=0.5, position=position_dodge(width=0.75))+
+    xlab(NULL)+ ylab("Standardized predicted prevalence (95% CI)")+ facet_grid(.~outcome2)+
     scale_fill_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
  #  scale_color_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
-    theme_bw()+ scale_y_continuous(labels = scales::percent, limits=c(0.0,1))+
+    theme_bw()+ scale_y_continuous(labels = scales::percent, limits=c(0.0,0.65))+
     geom_hline(yintercept=0, colour="black", lwd=1) +
     theme(axis.text.x = element_text(angle = 70, hjust=1, size=12), 
           axis.text.y = element_text(size=12), 
           axis.title.x = element_text(size=14), 
           axis.title.y = element_text(size=14), 
+          legend.position = "bottom"
     )
 
+  pred_prev_blwt_dem_byrace
+
+  ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/pred_prev_blwt_dem_byrace.jpg"), 
+         plot=pred_prev_blwt_dem_byrace, dpi="retina", width=6.5)
   
-  ggplot(data=pred_forplot[pred_forplot$race %in% c("White", "Black", "Latino"),])+
+  
+  
+  pred_prev_blwt_dem_bydem<-ggplot(data=pred_forplot[pred_forplot$race %in% c("White", "Black", "Latino"),])+
     geom_col(aes(x=factor(dementia), y=value, group=factor(race), 
                  fill=factor(race)), width=0.75, position=position_dodge(width=.75))+
     geom_errorbar(aes(x=factor(dementia), ymin=LCI, ymax=UCI, group=factor(race)), width=0.5, position=position_dodge(width=0.75))+
-    xlab("Race/ethnicity")+ ylab("Standardized predicted prevalence (95% CI)")+ facet_grid(.~outcome2)+
+    xlab(NULL)+ ylab("Standardized predicted prevalence (95% CI)")+ facet_grid(.~outcome2)+
 #    scale_fill_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
-    scale_fill_manual(name="", labels=c("Black", "Latino","White"), values=c("purple", "orange", "forestgreen"))+
-    theme_bw()+ scale_y_continuous(labels = scales::percent, limits=c(0.0,1))+scale_x_discrete(labels=c("No dementia", "Dementia"))+
+    scale_fill_manual(name="", labels=c("Black", "Latino","White"), values=c("slateblue3", "cadetblue3", "forestgreen"))+
+    theme_bw()+ scale_y_continuous(labels = scales::percent, limits=c(0.0,0.65))+scale_x_discrete(labels=c("No dementia", "Dementia"))+
     geom_hline(yintercept=0, colour="black", lwd=1) +
     theme(axis.text.x = element_text(angle = 70, hjust=1, size=12), 
           axis.text.y = element_text(size=12), 
           axis.title.x = element_text(size=14), 
           axis.title.y = element_text(size=14), 
+          legend.position = "bottom"
     )
   
-
+  pred_prev_blwt_dem_bydem
+  
+  ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/pred_prev_blwt_dem_bydem.jpg"), 
+         plot=pred_prev_blwt_dem_bydem, dpi="retina", width=6.5)
+  
