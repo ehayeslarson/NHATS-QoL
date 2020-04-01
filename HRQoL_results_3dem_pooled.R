@@ -237,7 +237,8 @@ plotresRR<-function(wt){
           axis.text.y = element_text(size=12), 
           axis.title.x = element_text(size=14), 
           axis.title.y = element_text(size=14), 
-    )
+          legend.position = "bottom"
+    )+ coord_flip()
 }
 
 res_un_RR<-plotresRR("unweighted_")
@@ -254,13 +255,14 @@ plotresRD<-function(wt){
                         color=as.factor(dementia)), position=position_dodge(width=0.6), size=1, shape=15)+
     xlab("HRQOL indicator")+ ylab("Prevalence difference (95% CI)")+ facet_grid(.~race)+
     scale_color_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
-    theme_bw()+ scale_y_continuous(labels = scales::percent, limits=c(-0.2,0.3))+
+    theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits=c(-0.15,0.3))+
     geom_hline(yintercept=0, colour="black", lwd=1) +
-    theme(axis.text.x = element_text(angle = 70, hjust=1, size=12), 
+    theme(axis.text.x = element_text(size=12), 
           axis.text.y = element_text(size=12), 
           axis.title.x = element_text(size=14), 
           axis.title.y = element_text(size=14), 
-    )
+          legend.position = "bottom"
+    )+ coord_flip()
 }
 
 res_un_RD<-plotresRD("unweighted_")
@@ -366,19 +368,17 @@ pred_prev_blwt_dem_byrace<-ggplot(data=pred_forplot[pred_forplot$race %in% c("Wh
   xlab(NULL)+ ylab("Standardized predicted prevalence (95% CI)")+ facet_grid(.~outcome2)+
   scale_fill_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
   #  scale_color_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
-  theme_bw()+ scale_y_continuous(labels = scales::percent, limits=c(0.0,0.75))+
+  theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy=1), limits=c(0,0.75))+
   geom_hline(yintercept=0, colour="black", lwd=1) +
-  theme(axis.text.x = element_text(angle = 70, hjust=1, size=12), 
+  theme(axis.text.x = element_text(size=12), 
         axis.text.y = element_text(size=12), 
         axis.title.x = element_text(size=14), 
         axis.title.y = element_text(size=14), 
         legend.position = "bottom"
-  )
-
-pred_prev_blwt_dem_byrace
+  )+ coord_flip()
 
 ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/pred_prev_blwt_dem_byrace.jpg"), 
-       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=6.5)
+       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=10)
 
 
 
@@ -389,16 +389,15 @@ pred_prev_blwt_dem_bydem<-ggplot(data=pred_forplot[pred_forplot$race %in% c("Whi
   xlab(NULL)+ ylab("Standardized predicted prevalence (95% CI)")+ facet_grid(.~outcome2)+
   #    scale_fill_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
   scale_fill_manual(name="", labels=c("Black", "Latino","White"), values=c("slateblue3", "cadetblue3", "forestgreen"))+
-  theme_bw()+ scale_y_continuous(labels = scales::percent, limits=c(0.0,0.75))+scale_x_discrete(labels=c("Probable dementia", "Possible dementia", "No dementia"))+
+  theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits=c(0.0,0.75))+scale_x_discrete(labels=c("Probable dementia", "Possible dementia", "No dementia"))+
   geom_hline(yintercept=0, colour="black", lwd=1) +
-  theme(axis.text.x = element_text(angle = 70, hjust=1, size=12), 
+  theme(axis.text.x = element_text(size=12), 
         axis.text.y = element_text(size=12), 
         axis.title.x = element_text(size=14), 
         axis.title.y = element_text(size=14), 
         legend.position = "bottom"
-  )
-
-pred_prev_blwt_dem_bydem
+  )+ coord_flip()
 
 ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/pred_prev_blwt_dem_bydem.jpg"), 
-       plot=pred_prev_blwt_dem_bydem, dpi="retina", width=6.5)
+       plot=pred_prev_blwt_dem_bydem, dpi="retina", width=10)
+ 
