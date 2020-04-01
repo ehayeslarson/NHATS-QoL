@@ -24,12 +24,12 @@ clean_data_hrqol_baseline<-clean_data_hrqol[clean_data_hrqol$first.obs==1,]
 
 
 catvars<-c("age.cat", "female","edu.7cat", "resid.care", "cens.area", "born.us", 
-           "proxy", "proxy.fam", "sr.highbp","sr.diabetes","sr.stroke", "sr.cancer", "dementia.bin")
+           "proxy", "proxy.fam", "sr.highbp","sr.diabetes","sr.stroke", "sr.cancer", "dementia.status", "round")
 catvar_names<-c("Age (years)", "Female", "Education attained", 
                 "Lives in residential care setting", "Census region", "Born in US", 
                 "Proxy answered survey", "Familiarity of proxy with routine", 
                 "Self-reported high blood pressure","Self-reported diabetes",
-                "Self-reported stroke", "Self-reported cancer", "Dementia")
+                "Self-reported stroke", "Self-reported cancer", "Dementia", "Enrolled in Round")
 
 
 #------------------------------------------------------------------
@@ -85,11 +85,5 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
   T1.list <- list("Unweighted" = T1results_unweighted, "Weighted" = T1results_weighted)
   write.xlsx(T1.list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/Table1.xlsx")
   
-  
-  
-#------------------------------------------------------------------
-# Prevalence of outcomes #
-#------------------------------------------------------------------
-
   
   
