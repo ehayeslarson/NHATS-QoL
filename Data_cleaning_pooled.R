@@ -9,7 +9,7 @@
 if (!require("pacman")) 
   install.packages("pacman", repos='http://cran.us.r-project.org')
 
-p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2")
+p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "survey")
 
 #------------------------------------------------------------------
 # Load data and do data cleaning #
