@@ -25,6 +25,13 @@ clean_data$first.obs<-raw_data$first_obs
 clean_data$count.obs<-raw_data$count_obs
 clean_data$last.obs<-raw_data$last_obs
 
+count_obs<-aggregate(cbind(count_obs = round) ~ spid, 
+                     data = clean_data, 
+                     FUN = function(x){NROW(x)})
+
+clean_data<-merge(clean_data,count_obs, all.x = T)
+
+
 #Cleaning categorical age variables
 table(raw_data$intvrage,exclude=NULL)
 table(raw_data$bl_agecat,exclude=NULL)
