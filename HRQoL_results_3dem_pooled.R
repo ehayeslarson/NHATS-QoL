@@ -38,6 +38,14 @@ clean_data_hrqol_nodem<-clean_data_hrqol[clean_data_hrqol$dementia.status==3,]
 outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
 
 
+# ---Number of observations per individual--- #
+
+count_obs<-aggregate(cbind(count = round) ~ spid, 
+          data = clean_data_hrqol, 
+          FUN = function(x){NROW(x)})
+
+test<-merge(clean_data_hrqol,count_obs,by="spid",all.x=TRUE)
+
 # ---Unweighted analyses--- #
 
 #Relative risk regression models
@@ -232,8 +240,9 @@ plotresRR<-function(wt){
     xlab("HRQOL indicator")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.6)+facet_grid(.~race)+
     scale_color_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
     theme_bw()+ 
+    guides(color = guide_legend(override.aes = list(linetype = 0, size=1)))+
     geom_hline(yintercept=1, colour="black", lwd=1) +
-    theme(axis.text.x = element_text(angle = 70, hjust=1, size=12), 
+    theme(axis.text.x = element_text(size=12), 
           axis.text.y = element_text(size=12), 
           axis.title.x = element_text(size=14), 
           axis.title.y = element_text(size=14), 
@@ -256,6 +265,7 @@ plotresRD<-function(wt){
     xlab("HRQOL indicator")+ ylab("Prevalence difference (95% CI)")+ facet_grid(.~race)+
     scale_color_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
     theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits=c(-0.15,0.3))+
+    guides(color = guide_legend(override.aes = list(linetype = 0, size=1)))+
     geom_hline(yintercept=0, colour="black", lwd=1) +
     theme(axis.text.x = element_text(size=12), 
           axis.text.y = element_text(size=12), 
@@ -279,8 +289,8 @@ for (i in 1:length(figures)){
 }
 
 
-save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/RR_HRQOL_pooled.Rdata")
-write.xlsx(results_all, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/RR_HRQOL_pooled.xlsx")
+ save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
+write.xlsx(res_tbls, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.xlsx")
 
 
 
