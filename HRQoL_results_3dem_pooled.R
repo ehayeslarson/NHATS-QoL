@@ -38,15 +38,14 @@ clean_data_hrqol_nodem<-clean_data_hrqol[clean_data_hrqol$dementia.status==3,]
 outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
 
 
-# ---Number of observations per individual--- #
+# ---Unweighted analyses--- #
 
-count_obs<-aggregate(cbind(count = round) ~ spid, 
-          data = clean_data_hrqol, 
-          FUN = function(x){NROW(x)})
+tapply(clean_data_hrqol$count_obs, clean_data_hrqol$race.eth, summary)
 
-test<-merge(clean_data_hrqol,count_obs,by="spid",all.x=TRUE)
+
 
 # ---Unweighted analyses--- #
+
 
 #Relative risk regression models
 
