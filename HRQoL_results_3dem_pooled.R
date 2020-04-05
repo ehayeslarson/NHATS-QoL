@@ -38,11 +38,11 @@ clean_data_hrqol_nodem<-clean_data_hrqol[clean_data_hrqol$dementia.status==3,]
 outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
 
 
-# ---Unweighted analyses--- #
+# ---Generating additional #s in manuscript--- #
 
 tapply(clean_data_hrqol$count_obs, clean_data_hrqol$race.eth, summary)
 
-
+CreateTableOne("proxy", c("race.eth", "dementia.status"), clean_data_hrqol, "proxy")
 
 # ---Unweighted analyses--- #
 
@@ -284,11 +284,11 @@ figures<-list(res_un_RR=res_un_RR, res_av_RR=res_av_RR, res_bl_RR=res_bl_RR,
 
 for (i in 1:length(figures)){
   ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/",names(figures)[i],".jpg"), 
-         plot=eval(parse_expr(names(figures[i]))), dpi="retina")
+         plot=eval(parse_expr(names(figures[i]))), dpi="retina", width = 6.5)
 }
 
 
- save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
+save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
 write.xlsx(res_tbls, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.xlsx")
 
 
@@ -340,7 +340,15 @@ pred_prev_demposs$dementia<-2
 pred_prev_nodem$dementia<-3
 
 
-pred_all<-rbind(pred_prev_demprob,pred_prev_demposs, pred_prev_nodem)
+pred_all<-list(pred_prev_demprob, pred_prev_demposs, pred_prev_nodem)
+
+pred_list<-list(pred_prev_demprob=pred_prev_demprob,
+                pred_prev_demposs=pred_prev_demposs, 
+                pred_prev_nodem=pred_prev_nodem)
+
+save(pred_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
+write.xlsx(pred_list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.xlsx")
+
 
 pred_forplot<-pivot_longer(pred_all, cols = c("white_est", "black_est", "latino_est", "other_est"),
                            names_to="race")
