@@ -40,8 +40,27 @@ outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits
 
 # ---Generating additional #s in manuscript--- #
 
-tapply(clean_data_hrqol$count_obs, clean_data_hrqol$race.eth, summary)
+# participants by distinct spid
+nrow(clean_data_hrqol%>% distinct(spid))
+  
+#sumary of # obs/participant by race/eth.
+count_obs<-aggregate(cbind(count_obs = spid) ~ spid, 
+                     data = clean_data_hrqol, 
+                     FUN = function(x){NROW(x)})
 
+clean_data_hrqol_temp<-merge(clean_data_hrqol,count_obs, by="spid", all.x = T)
+
+clean_data_hrqol_temp <- clean_data_hrqol_temp  %>% distinct(spid, race.eth, count_obs) 
+
+tapply(clean_data_hrqol_temp$count_obs, clean_data_hrqol_temp$race.eth, mean)
+
+tapply(clean_data_hrqol_temp$count_obs, clean_data_hrqol_temp$race.eth, sd)
+
+mean(clean_data_hrqol_temp$count_obs)
+summary(clean_data_hrqol_temp$count_obs)
+
+
+#Proprotion using proxy by race, dementia status
 CreateTableOne("proxy", c("race.eth", "dementia.status"), clean_data_hrqol, "proxy")
 
 # ---Unweighted analyses--- #
