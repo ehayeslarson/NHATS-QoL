@@ -478,16 +478,21 @@ clean_data$comp.case.HRQoL<-complete.cases(clean_data[c("spid", "round", "first.
                                                       "dementia.bin", "proxy", "analytic.wgt", "baseline.anwgt", "average.anwgt", "stratum", "baseline.stratum",
                                                       "cluster", "baseline.cluster",  "race.eth", "prob.dep", "prob.anx", "poorhealth.bin", "pain.bother",
                                                       "funclimits", "female")])
+
+table(clean_data[!is.na(clean_data$race.eth),"comp.case.HRQoL"], exclude=NULL)
+
+nrow(clean_data[!is.na(clean_data$race.eth) & clean_data$comp.case.HRQoL==1,])/nrow(clean_data[!is.na(clean_data$race.eth),])
+
 #EHL testing
-table(clean_data$comp.case.HRQoL)
-test<- clean_data %>% group_by(round) %>% filter(comp.case.HRQoL==T) %>% summarise(., n())
-test<- cbind(test,clean_data %>% group_by(round) %>% summarise(., n()) %>% select(2))
+#1475/nrow(clean_data)
+#test<- clean_data %>% group_by(round) %>% filter(comp.case.HRQoL==T) %>% summarise(., n())
+#test<- cbind(test,clean_data %>% group_by(round) %>% summarise(., n()) %>% select(2))
 
-test2 <- test %>% set_colnames(c("Round", "ncomp", "ntotal"))
-colnames(test2)<-NULL
-colnames(test2)<-c("Round", "ncomp", "ntotal")
+#test2 <- test %>% set_colnames(c("Round", "ncomp", "ntotal"))
+#colnames(test2)<-NULL
+#colnames(test2)<-c("Round", "ncomp", "ntotal")
 
-test$propcomp<-(test[,2])/(test[,3])
+#test$propcomp<-(test[,2])/(test[,3])
 
 #Complete cases well-being
 clean_data$comp.case.WBQoL<-complete.cases(clean_data[c("spid", "round", "first.obs", "count.obs", "last.obs", "age.cat", "baseline.age", "dementia.status", 
