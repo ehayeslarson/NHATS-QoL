@@ -234,11 +234,11 @@ results_forplot<- results_forplot[,c("outcome","race", "dementia", "weight", "me
 
 
 results_forplot$outcome2<-NA
-results_forplot$outcome2[results_forplot$outcome=="funclimits"]<-">=1 ADL limitation"
+results_forplot$outcome2[results_forplot$outcome=="funclimits"]<-"Functional limitations"
 results_forplot$outcome2[results_forplot$outcome=="pain.bother"]<-"Bothered by pain"
 results_forplot$outcome2[results_forplot$outcome=="poorhealth.bin"]<-"Fair/poor health"
-results_forplot$outcome2[results_forplot$outcome=="prob.dep"]<-"Screen+ depresson"
-results_forplot$outcome2[results_forplot$outcome=="prob.anx"]<-"Screen+ anxiety"
+results_forplot$outcome2[results_forplot$outcome=="prob.dep"]<-"Elevated depressive \nsymptoms"
+results_forplot$outcome2[results_forplot$outcome=="prob.anx"]<-"Elevated anxiety \nsymptoms"
 
 results_forplot$race[results_forplot$race=="black_est"] <- "Black vs. White"
 results_forplot$race[results_forplot$race=="hispanic_est"] <- "Latino vs. White"
@@ -253,10 +253,14 @@ plotresRR<-function(wt){
                                  results_forplot$race=="Latino vs. White") & 
                                 results_forplot$measure=="RR" &
                                 results_forplot$weight==wt,])+
-    geom_pointrange(aes(x=outcome2, y=value, ymin=LCI, ymax=UCI, group=as.factor(dementia), 
-                        color=as.factor(dementia)), position=position_dodge(width=0.6), size=1, shape=15)+
+    geom_pointrange(aes(x=factor(outcome2, levels = c("Bothered by pain", "Elevated anxiety \nsymptoms",
+                                                      "Functional limitations", "Elevated depressive \nsymptoms",
+                                                      "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
+                        color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
     xlab("HRQOL indicator")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.6)+facet_grid(.~race)+
-    scale_color_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
+    scale_color_manual(name="", breaks=c(1,2,3),
+                                labels=c("Probable dementia", "Possible dementia","No dementia"), 
+                                values=c("navy", "steelblue","lightblue"))+
     theme_bw()+ 
     guides(color = guide_legend(override.aes = list(linetype = 0, size=1)))+
     geom_hline(yintercept=1, colour="black", lwd=1) +
@@ -278,10 +282,14 @@ plotresRD<-function(wt){
                                  results_forplot$race=="Latino vs. White") & 
                                 results_forplot$measure=="RD" &
                                 results_forplot$weight==wt,])+
-    geom_pointrange(aes(x=outcome2, y=value, ymin=LCI, ymax=UCI, group=as.factor(dementia), 
-                        color=as.factor(dementia)), position=position_dodge(width=0.6), size=1, shape=15)+
-    xlab("HRQOL indicator")+ ylab("Prevalence difference (95% CI)")+ facet_grid(.~race)+
-    scale_color_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
+    geom_pointrange(aes(x=factor(outcome2, levels = c("Bothered by pain", "Elevated anxiety \nsymptoms",
+                                                      "Functional limitations", "Elevated depressive \nsymptoms",
+                                                      "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
+                        color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
+    xlab("")+ ylab("Prevalence difference (95% CI)")+ facet_grid(.~race)+
+    scale_color_manual(name="", breaks=c(1,2,3),
+                       labels=c("Probable dementia", "Possible dementia","No dementia"), 
+                       values=c("navy", "steelblue","lightblue"))+
     theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits=c(-0.15,0.3))+
     guides(color = guide_legend(override.aes = list(linetype = 0, size=1)))+
     geom_hline(yintercept=0, colour="black", lwd=1) +
@@ -359,7 +367,7 @@ pred_prev_demposs$dementia<-2
 pred_prev_nodem$dementia<-3
 
 
-pred_all<-list(pred_prev_demprob, pred_prev_demposs, pred_prev_nodem)
+pred_all<-rbind(pred_prev_demprob, pred_prev_demposs, pred_prev_nodem)
 
 pred_list<-list(pred_prev_demprob=pred_prev_demprob,
                 pred_prev_demposs=pred_prev_demposs, 
@@ -385,11 +393,15 @@ pred_forplot<- pred_forplot[,c("outcome","race", "dementia", "value", "LCI", "UC
 
 
 pred_forplot$outcome2<-NA
-pred_forplot$outcome2[pred_forplot$outcome=="funclimits"]<-">=1 ADL limitation"
+pred_forplot$outcome2[pred_forplot$outcome=="funclimits"]<-"Functional limitations"
 pred_forplot$outcome2[pred_forplot$outcome=="pain.bother"]<-"Bothered by pain"
 pred_forplot$outcome2[pred_forplot$outcome=="poorhealth.bin"]<-"Fair/poor health"
-pred_forplot$outcome2[pred_forplot$outcome=="prob.dep"]<-"Screen+ depresson"
-pred_forplot$outcome2[pred_forplot$outcome=="prob.anx"]<-"Screen+ anxiety"
+pred_forplot$outcome2[pred_forplot$outcome=="prob.dep"]<-"Elevated depressive symptoms"
+pred_forplot$outcome2[pred_forplot$outcome=="prob.anx"]<-"Elevated anxiety symptoms"
+
+pred_forplot$outcome2<-factor(pred_forplot$outcome2, levels = c("Fair/poor health", "Elevated depressive symptoms",
+                                                                "Functional limitations", "Elevated anxiety symptoms",
+                                                                "Bothered by pain"))
 
 pred_forplot$race[pred_forplot$race=="white_est"] <- "White"
 pred_forplot$race[pred_forplot$race=="black_est"] <- "Black"
@@ -401,39 +413,21 @@ pred_prev_blwt_dem_byrace<-ggplot(data=pred_forplot[pred_forplot$race %in% c("Wh
   geom_col(aes(x=race, y=value, group=factor(dementia), 
                fill=factor(dementia)), width=0.75, position=position_dodge(width=.75))+
   geom_errorbar(aes(x=race, ymin=LCI, ymax=UCI, group=factor(dementia)), width=0.5, position=position_dodge(width=0.75))+
-  xlab(NULL)+ ylab("Standardized predicted prevalence (95% CI)")+ facet_grid(.~outcome2)+
+  xlab(NULL)+ ylab("Standardized predicted prevalence (95% CI)")+ 
+  facet_wrap( ~ outcome2, ncol=1)+
   scale_fill_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
-  #  scale_color_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
   theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy=1), limits=c(0,0.75))+
-  geom_hline(yintercept=0, colour="black", lwd=1) +
-  theme(axis.text.x = element_text(size=12), 
-        axis.text.y = element_text(size=12), 
-        axis.title.x = element_text(size=14), 
-        axis.title.y = element_text(size=14), 
+  geom_hline(yintercept=0, colour="black", lwd=0.5) +
+  theme(axis.text.x = element_text(size=14), 
+        axis.text.y = element_text(size=14), 
+        axis.title.x = element_text(size=16), 
+        axis.title.y = element_text(size=16),
+        strip.text.x = element_text(size = 12),
         legend.position = "bottom"
-  )+ coord_flip()
+  )
+
+pred_prev_blwt_dem_byrace
 
 ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/pred_prev_blwt_dem_byrace.jpg"), 
-       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=10)
+       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
 
-
-
-pred_prev_blwt_dem_bydem<-ggplot(data=pred_forplot[pred_forplot$race %in% c("White", "Black", "Latino"),])+
-  geom_col(aes(x=factor(dementia), y=value, group=factor(race), 
-               fill=factor(race)), width=0.75, position=position_dodge(width=.75))+
-  geom_errorbar(aes(x=factor(dementia), ymin=LCI, ymax=UCI, group=factor(race)), width=0.5, position=position_dodge(width=0.75))+
-  xlab(NULL)+ ylab("Standardized predicted prevalence (95% CI)")+ facet_grid(.~outcome2)+
-  #    scale_fill_manual(name="", labels=c("No dementia", "Dementia"), values=c("navy", "steelblue"))+
-  scale_fill_manual(name="", labels=c("Black", "Latino","White"), values=c("slateblue3", "cadetblue3", "forestgreen"))+
-  theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits=c(0.0,0.75))+scale_x_discrete(labels=c("Probable dementia", "Possible dementia", "No dementia"))+
-  geom_hline(yintercept=0, colour="black", lwd=1) +
-  theme(axis.text.x = element_text(size=12), 
-        axis.text.y = element_text(size=12), 
-        axis.title.x = element_text(size=14), 
-        axis.title.y = element_text(size=14), 
-        legend.position = "bottom"
-  )+ coord_flip()
-
-ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/pred_prev_blwt_dem_bydem.jpg"), 
-       plot=pred_prev_blwt_dem_bydem, dpi="retina", width=10)
- 
