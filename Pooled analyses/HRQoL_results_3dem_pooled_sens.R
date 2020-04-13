@@ -231,7 +231,7 @@ plotresRR<-function(wt){
                                                       "Functional limitations", "Elevated depressive \nsymptoms",
                                                       "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
                         color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
-    xlab("")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.6)+facet_grid(.~race)+
+    xlab("")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.7)+facet_grid(.~race)+
     scale_color_manual(name="", breaks=c(1,2,3),
                        labels=c("Probable dementia", "Possible dementia","No dementia"), 
                        values=c("tan4", "tan3", "tan1"))+
@@ -265,7 +265,7 @@ plotresRD<-function(wt){
     scale_color_manual(name="", breaks=c(1,2,3),
                        labels=c("Probable dementia", "Possible dementia","No dementia"), 
                        values=c("tan4", "tan3", "tan1"))+
-    theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits=c(-0.15,0.3))+
+    theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits=c(-0.15,0.4))+
     guides(color = guide_legend(override.aes = list(linetype = 0, size=1)))+
     geom_hline(yintercept=0, colour="black", lwd=1) +
     theme(axis.text.x = element_text(size=12), 
@@ -399,7 +399,7 @@ pred_prev_blwt_dem_byrace<-ggplot(data=pred_forplot[pred_forplot$race %in% c("Wh
 pred_prev_blwt_dem_byrace
 
 ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/SENS/pred_prev_blwt_dem_byrace_sens.jpg"), 
-       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=10)
+       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
 
 
 

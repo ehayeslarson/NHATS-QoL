@@ -257,7 +257,7 @@ plotresRR<-function(wt){
                                                       "Functional limitations", "Elevated depressive \nsymptoms",
                                                       "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
                         color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
-    xlab("HRQOL indicator")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.6)+facet_grid(.~race)+
+    xlab("")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.6)+facet_grid(.~race)+
     scale_color_manual(name="", breaks=c(1,2,3),
                                 labels=c("Probable dementia", "Possible dementia","No dementia"), 
                                 values=c("navy", "steelblue","lightblue"))+

@@ -1,0 +1,115 @@
+---
+title: "HRQoL results"
+author: "Eleanor Hayes-Larson"
+date: "3/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+#Load main results
+load("C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
+load("C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
+
+```
+
+## THese are the results for the main analysis
+
+```{r cars}
+results_forplot<-pivot_longer(results_all, cols = c("black_est", "hispanic_est", "other_est"),
+                              names_to="race")
+
+results_forplot$LCI<-ifelse(results_forplot$race=="black_est", results_forplot$black_lci, 
+                            ifelse(results_forplot$race=="hispanic_est", results_forplot$hispanic_lci,results_forplot$other_lci))
+
+results_forplot$UCI<-ifelse(results_forplot$race=="black_est", results_forplot$black_uci, 
+                            ifelse(results_forplot$race=="hispanic_est", results_forplot$hispanic_uci,results_forplot$other_uci))
+
+results_forplot<- results_forplot[,c("outcome","race", "dementia", "weight", "measure", "value", "LCI", "UCI")]
+
+
+results_forplot$outcome2<-NA
+results_forplot$outcome2[results_forplot$outcome=="funclimits"]<-"Functional limitations"
+results_forplot$outcome2[results_forplot$outcome=="pain.bother"]<-"Bothered by pain"
+results_forplot$outcome2[results_forplot$outcome=="poorhealth.bin"]<-"Fair/poor health"
+results_forplot$outcome2[results_forplot$outcome=="prob.dep"]<-"Elevated /ndepressive symptoms"
+results_forplot$outcome2[results_forplot$outcome=="prob.anx"]<-"Elevated /nanxiety symptoms"
+
+results_forplot$race[results_forplot$race=="black_est"] <- "Black vs. White"
+results_forplot$race[results_forplot$race=="hispanic_est"] <- "Latino vs. White"
+results_forplot$race[results_forplot$race=="other_est"] <- "Other vs. White"
+
+
+
+
+
+plotresRR<-function(wt){
+  ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" | 
+                                 results_forplot$race=="Latino vs. White") & 
+                                results_forplot$measure=="RR" &
+                                results_forplot$weight==wt,])+
+    geom_pointrange(aes(x=outcome2, y=value, ymin=LCI, ymax=UCI, group=as.factor(dementia), 
+                        color=as.factor(dementia, levels=c(3,2,1))), position=position_dodge(width=0.6), size=1, shape=15)+
+    xlab("HRQOL indicator")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.6)+facet_grid(.~race)+
+    scale_color_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
+    theme_bw()+ 
+    guides(color = guide_legend(override.aes = list(linetype = 0, size=1)))+
+    geom_hline(yintercept=1, colour="black", lwd=1) +
+    theme(axis.text.x = element_text(size=12), 
+          axis.text.y = element_text(size=12), 
+          axis.title.x = element_text(size=14), 
+          axis.title.y = element_text(size=14), 
+          legend.position = "bottom"
+    )+ coord_flip()
+}
+
+res_un_RR<-plotresRR("unweighted_")
+res_bl_RR<-plotresRR("weighted_bl")
+res_av_RR<-plotresRR("weighted_av")
+
+
+plotresRD<-function(wt){
+  ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" | 
+                                 results_forplot$race=="Latino vs. White") & 
+                                results_forplot$measure=="RD" &
+                                results_forplot$weight==wt,])+
+    geom_pointrange(aes(x=outcome2, y=value, ymin=LCI, ymax=UCI, group=as.factor(dementia), 
+                        color=as.factor(dementia)), position=position_dodge(width=0.6), size=1, shape=15)+
+    xlab("HRQOL indicator")+ ylab("Prevalence difference (95% CI)")+ facet_grid(.~race)+
+    scale_color_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
+    theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits=c(-0.15,0.3))+
+    guides(color = guide_legend(override.aes = list(linetype = 0, size=1)))+
+    geom_hline(yintercept=0, colour="black", lwd=1) +
+    theme(axis.text.x = element_text(size=12), 
+          axis.text.y = element_text(size=12), 
+          axis.title.x = element_text(size=14), 
+          axis.title.y = element_text(size=14), 
+          legend.position = "bottom"
+    )+ coord_flip()
+}
+
+res_un_RD<-plotresRD("unweighted_")
+res_bl_RD<-plotresRD("weighted_bl")
+res_av_RD<-plotresRD("weighted_av")
+
+
+figures<-list(res_un_RR=res_un_RR, res_av_RR=res_av_RR, res_bl_RR=res_bl_RR, 
+              res_un_RD=res_un_RD, res_av_RD=res_av_RD, res_bl_RD=res_bl_RD)
+
+#for (i in 1:length(figures)){
+#  ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/",names(figures)[i],".jpg"), 
+#         plot=eval(parse_expr(names(figures[i]))), dpi="retina", width = 6.5)
+#}
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
