@@ -19,8 +19,10 @@ load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_
 
 clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
 
-#Keep baseline observation
-clean_data_hrqol_baseline<-clean_data_hrqol[clean_data_hrqol$first.obs==1,]
+#Keep baseline observation for participants in clean_data_hrqol
+idlist<-clean_data_hrqol %>% distinct(spid)
+idlist<-idlist[,1]
+clean_data_hrqol_baseline<-clean_data %>% filter(.,first.obs==1, spid %in% idlist)
 
 
 catvars<-c("age.cat", "female","edu.7cat", "resid.care", "cens.area", "born.us", 
