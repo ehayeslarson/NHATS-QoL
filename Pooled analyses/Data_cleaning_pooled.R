@@ -18,9 +18,11 @@ raw_data<-read_sas("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/nhats_qol
 
 clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned variables
 
-#Bringing in observation indicator variables
+#Bringing in observation indicator variables. 
 clean_data$round<-raw_data$round 
 
+#EHL notes that these are for the full dataset, prior to dropping observations with missing data. 
+#These need to be recalculated for complete case datasets. 
 clean_data$first.obs<-raw_data$first_obs
 clean_data$count.obs<-raw_data$count_obs
 clean_data$last.obs<-raw_data$last_obs
@@ -481,18 +483,18 @@ clean_data$comp.case.HRQoL<-complete.cases(clean_data[c("spid", "round", "first.
 
 table(clean_data[!is.na(clean_data$race.eth),"comp.case.HRQoL"], exclude=NULL)
 
-nrow(clean_data[!is.na(clean_data$race.eth) & clean_data$comp.case.HRQoL==1,])/nrow(clean_data[!is.na(clean_data$race.eth),])
 
-#EHL testing
-#1475/nrow(clean_data)
-#test<- clean_data %>% group_by(round) %>% filter(comp.case.HRQoL==T) %>% summarise(., n())
-#test<- cbind(test,clean_data %>% group_by(round) %>% summarise(., n()) %>% select(2))
-
-#test2 <- test %>% set_colnames(c("Round", "ncomp", "ntotal"))
-#colnames(test2)<-NULL
-#colnames(test2)<-c("Round", "ncomp", "ntotal")
-
-#test$propcomp<-(test[,2])/(test[,3])
+    #EHL testing
+    #nrow(clean_data[!is.na(clean_data$race.eth) & clean_data$comp.case.HRQoL==1,])/nrow(clean_data[!is.na(clean_data$race.eth),])
+    #1475/nrow(clean_data)
+    #test<- clean_data %>% group_by(round) %>% filter(comp.case.HRQoL==T) %>% summarise(., n())
+    #test<- cbind(test,clean_data %>% group_by(round) %>% summarise(., n()) %>% select(2))
+    
+    #test2 <- test %>% set_colnames(c("Round", "ncomp", "ntotal"))
+    #colnames(test2)<-NULL
+    #colnames(test2)<-c("Round", "ncomp", "ntotal")
+    
+    #test$propcomp<-(test[,2])/(test[,3])
 
 #Complete cases well-being
 clean_data$comp.case.WBQoL<-complete.cases(clean_data[c("spid", "round", "first.obs", "count.obs", "last.obs", "age.cat", "baseline.age", "dementia.status", 
@@ -513,8 +515,8 @@ table(clean_data$comp.case.all, exclude=NULL)
 # Create dementia sensitivity analysis variable
 #------------------------------------------------------------------
 
-#Keep only Round 1, self-respondents to be consistent with NHATS algorithm
-
+#To define thresholds, keep only Round 1, self-respondents to be consistent with NHATS algorithm
+#Use weighted means to be consistent with NHATS algorithm.
 threshold_samp<-clean_data[clean_data$round==1 & clean_data$proxy==0,]
 nhats_design<-svydesign(data=threshold_samp, id=~cluster, strata=~stratum, weights=~analytic.wgt, nest=T)
 
@@ -531,6 +533,7 @@ overall<-data.frame(threshold=c("1.25SD", "1.50SD", "1.75SD"), clock=rep(NA,3), 
 
 SDmults<-c(1.25, 1.50, 1.75)
 
+#Take the floor because we want to be <= the threshold, and scores are in single point increments (not continuous)
 overall$clock<-floor(clock.mean-SDmults*clock.sd)
 overall$word<-floor(word.mean-SDmults*word.sd)
 overall$datepres<-floor(datepres.mean-SDmults*datepres.sd)
