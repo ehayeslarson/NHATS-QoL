@@ -201,10 +201,10 @@ temp_depresan4<-ifelse(raw_data$depresan4==-7|raw_data$depresan4==-8,NA,raw_data
 table(temp_depresan4,raw_data$depresan4,exclude=NULL) #check temp variable 
 
 temp_anx.sum<-temp_depresan3+temp_depresan4 
-temp_prob.anx<-(temp_anx.sum>=3 | temp_depresan3>=3 | temp_depresan4>=3) #create temp depression variable
-table(temp_prob.anx, temp_depresan3, temp_depresan4,exclude=NULL) #check coding of temp depression variable
+temp_prob.anx<-(temp_anx.sum>=3 | temp_depresan3>=3 | temp_depresan4>=3) #create temp anxiety variable
+table(temp_prob.anx, temp_depresan3, temp_depresan4,exclude=NULL) #check coding of temp anxiety variable
 
-clean_data$prob.anx<-ifelse(temp_prob.anx,1, ifelse(!temp_prob.anx,0,NA)) #code clean depression indicator outcome    
+clean_data$prob.anx<-ifelse(temp_prob.anx,1, ifelse(!temp_prob.anx,0,NA)) #code clean anxiety indicator outcome    
 table(clean_data$prob.anx, temp_prob.anx,exclude=NULL) #Check coding
 #FINAL CODING# clean_data$prob.anx: 1=probable anxiety (>=3 on GAD2), 0=no probable anxiety (0-2 on GAD2)
 
