@@ -11,21 +11,39 @@ if (!require("pacman"))
 
 p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "survey")
 
+#get rid of scientific notation
+options(scipen = 999)
+
 #------------------------------------------------------------------
 # Load data and do data cleaning #
 #------------------------------------------------------------------
-raw_data<-read_sas("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
+#Figuring out my data path
+library(here)
+
+raw_data<-read_sas("/Users/CrystalShaw/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
 
 clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned variables
 
+#Code review
+head(clean_data)
+head(raw_data$spid)
+
 #Bringing in observation indicator variables. 
 clean_data$round<-raw_data$round 
+
+#Code review
+head(clean_data)
+head(raw_data$round)
 
 #EHL notes that these are for the full dataset, prior to dropping observations with missing data. 
 #These need to be recalculated for complete case datasets. 
 clean_data$first.obs<-raw_data$first_obs
 clean_data$count.obs<-raw_data$count_obs
 clean_data$last.obs<-raw_data$last_obs
+
+#Code checking
+head(clean_data)
+head(raw_data[, c("first_obs", "count_obs", "last_obs")])
 
 
 #Cleaning categorical age variables
@@ -37,13 +55,18 @@ table(raw_data$bl_agecat,exclude=NULL)
                      levels = c(1,2,3,4,5,6),
                      labels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", "85 to 89", "90+")) 
   table(clean_data$age.cat, raw_data$intvrage, exclude=NULL)
-
+  
+  #Code checking
+  sum(is.na(clean_data$age.cat))
 
   clean_data$baseline.age<-raw_data$bl_agecat
   clean_data$baseline.age <- ordered(clean_data$baseline.age,
                               levels = c(1,2,3,4,5,6),
                               labels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", "85 to 89", "90+")) 
   table(clean_data$baseline.age, raw_data$bl_agecat, exclude=NULL)
+  
+  #Code checking
+  sum(is.na(clean_data$baseline.age))
 
 
 #Cleaning selection variable (derived dementia variable)
