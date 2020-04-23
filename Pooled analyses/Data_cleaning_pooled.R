@@ -91,10 +91,18 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   clean_data$analytic.wgt<-raw_data$anfinwgt0
   clean_data$analytic.wgt_scaled<-clean_data$analytic.wgt/sum(clean_data$analytic.wgt)
   
+  #Code checking
+  sum(is.na(raw_data$anfinwgt0)) #there's no missing weights
+  hist(raw_data$anfinwgt0)
+  sum(raw_data$anfinwgt0 == 0) #there's no zero weights
+  
   #Baseline analytic weight
   summary(raw_data$bl_anfinwgt0, exclude=NULL)
   clean_data$baseline.anwgt<-raw_data$bl_anfinwgt0 
   clean_data$baseline.anwgt_scaled<-clean_data$baseline.anwgt/sum(clean_data$baseline.anwgt)
+  
+  #Code checking
+  hist(clean_data$baseline.anwgt_scaled)
   
   #average analytic weight
   mean_by_person <- raw_data %>% 
@@ -106,6 +114,15 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   
   summary(clean_data$diff.anwgt)
   summary(clean_data$max.anwgt)
+  
+  #Code checking
+  hist(mean_by_person$diff.anwgt)
+  dim(clean_data)
+  dim(mean_by_person)
+  colnames(mean_by_person)
+  head(clean_data$average.anwgt)
+  tail(clean_data$average.anwgt)
+  hist(clean_data$average.anwgt_scaled)
   
   #EHL checking
     # clean_data2<- clean_data %>% mutate(bigwtchange=(diff.anwgt>5099))
