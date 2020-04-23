@@ -357,7 +357,8 @@ clean_data$edu.7cat<-ordered(clean_data$edu.7cat,
 
 table(clean_data$edu.cat,clean_data$edu.7cat, exclude=NULL)
 
-table(clean_data$edu.cat, clean_data$edu.bin, exclude=NULL)
+#Didn't create?
+#table(clean_data$edu.cat, clean_data$edu.bin, exclude=NULL)
 
 #Residential status
 table(raw_data$resid, exclude=NULL)
