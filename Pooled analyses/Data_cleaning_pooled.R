@@ -256,6 +256,15 @@ table(temp_iadl6, raw_data$dreshelp, exclude=NULL) #check coding
 temp_iadl.max<-pmax(temp_iadl1, temp_iadl2, temp_iadl3, temp_iadl4, temp_iadl5, temp_iadl6)
 table(temp_iadl.max, exclude=NULL)
 
+#Code checking
+head(which(is.na(temp_iadl.max)))
+temp_iadls <- cbind(temp_iadl1, temp_iadl2, temp_iadl3, temp_iadl4, temp_iadl5, 
+                    temp_iadl6)
+temp_iadls[30, ]
+pmax(temp_iadl1, temp_iadl2, temp_iadl3, temp_iadl4, temp_iadl5, 
+     temp_iadl6, na.rm = TRUE)
+
+
 temp_funclimits<-(temp_iadl.max==1 | temp_iadl1==1 | temp_iadl2==1 | temp_iadl3==1 | temp_iadl4==1 | temp_iadl5==1 | temp_iadl6==1)
 table(temp_funclimits, temp_iadl.max, exclude=NULL)
 
