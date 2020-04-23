@@ -511,7 +511,7 @@ table(raw_data$datena_score, exclude=NULL)
 clean_data$datena.sum <- raw_data$datena_score
   table(raw_data$datena_score, clean_data$datena.sum, exclude=NULL)  
   
-#Executive function domain: cock drawing score
+#Executive function domain: clock drawing score
 table(raw_data$clock_scorer, exclude=NULL)
 clean_data$clock.score<-raw_data$clock_scorer
 
