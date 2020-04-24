@@ -627,6 +627,9 @@ for (i in 0:1) {
 
 clean_data[,c("dem_sens0","dem_sens1")]<-NA
 
+#Code check
+head(clean_data[which(clean_data[, "domain.sum0"] != 0), ])
+
 #Create dem_sens0 to check that it matches NHATS original derived dementia.status variable
 clean_data<-clean_data %>% mutate(dem_sens0=replace(dem_sens0, (clean_data$sr.demalz==1 | clean_data$ad8.score>=2 | clean_data$domain.sum0>=2), 1))
 clean_data<-clean_data %>% mutate(dem_sens0=replace(dem_sens0, (is.na(clean_data$dem_sens0) & clean_data$domain.sum0>=1), 2))
