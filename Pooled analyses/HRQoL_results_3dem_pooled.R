@@ -64,6 +64,9 @@ count_obs<-aggregate(cbind(count_obs = spid) ~ spid,
 
 clean_data_hrqol_temp<-merge(clean_data_hrqol,count_obs, by="spid", all.x = T)
 
+#code checking
+dim(clean_data_hrqol_temp)
+
 clean_data_hrqol_temp <- clean_data_hrqol_temp  %>% distinct(spid, race.eth, count_obs) 
 
 tapply(clean_data_hrqol_temp$count_obs, clean_data_hrqol_temp$race.eth, mean)
@@ -76,6 +79,9 @@ summary(clean_data_hrqol_temp$count_obs)
 
 #Proprotion using proxy by race, dementia status
 CreateTableOne("proxy", c("race.eth", "dementia.status"), clean_data_hrqol, "proxy")
+
+#code checking
+table(clean_data_hrqol$proxy, clean_data_hrqol$race.eth, clean_data_hrqol$dementia.status)
 
 # ---Unweighted analyses--- #
 
