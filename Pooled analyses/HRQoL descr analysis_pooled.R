@@ -21,6 +21,8 @@ install.packages("wgeesel")
 library("wgeesel")
 install.packages("tidyverse")
 library("tidyverse")
+install.packages("survey")
+library("survey")
 
 #------------------------------------------------------------------
 # Load clean data#
@@ -89,6 +91,8 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
   
   svytable(~edu.cat+race.eth, nhats_design, exclude=NULL, round=T, na.action=na.pass, addNA=TRUE)
   
+  #code checking
+  svytable(~edu.7cat+race.eth, nhats_design, exclude=NULL, round=T, na.action=na.pass, addNA=TRUE)
   
   T1results_weighted<-matrix(nrow=1, ncol=5)
   T1results_weighted[1,]<- c("Race/ethnicity total",
