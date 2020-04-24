@@ -12,10 +12,23 @@ if (!require("pacman"))
 p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "gee", "wgeesel", 
        "survey", "tableone", "openxlsx", "rlang")
 
+#code checking -- TMM loading packaages
+install.packages("haven")
+library("haven")
+install.packages("rlang")
+library("rlang")
+install.packages("wgeesel")
+library("wgeesel")
+install.packages("tidyverse")
+library("tidyverse")
+
 #------------------------------------------------------------------
 # Load clean data#
 #------------------------------------------------------------------
 load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+
+#code checking -- TMM loading dataset
+load("C:/Users/tmobley/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
 
 clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
 
@@ -24,6 +37,8 @@ idlist<-clean_data_hrqol %>% distinct(spid)
 idlist<-idlist[,1]
 clean_data_hrqol_baseline<-clean_data %>% filter(.,first.obs==1, spid %in% idlist)
 
+#code checking
+table(clean_data_hrqol_baseline$first.obs)
 
 catvars<-c("age.cat", "female","edu.7cat", "resid.care", "cens.area", "born.us", 
            "proxy", "proxy.fam", "sr.highbp","sr.diabetes","sr.stroke", "sr.cancer", "dementia.status", "round")
@@ -42,6 +57,7 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
     T1results_unweighted<-matrix(nrow=1, ncol=5)
     T1results_unweighted[1,]<- c("Race/ethnicity total",table(clean_data_hrqol_baseline$race.eth))
     
+    #code checking
     for (i in 1:length(catvars)){
     tab.to.add<-table(eval(parse_expr(paste0("clean_data_hrqol_baseline$",catvars[i])))
                       ,clean_data_hrqol_baseline$race.eth, exclude=NULL)
