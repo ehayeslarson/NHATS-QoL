@@ -56,8 +56,8 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
     
     T1results_unweighted<-matrix(nrow=1, ncol=5)
     T1results_unweighted[1,]<- c("Race/ethnicity total",table(clean_data_hrqol_baseline$race.eth))
-    
-    #code checking
+  
+
     for (i in 1:length(catvars)){
     tab.to.add<-table(eval(parse_expr(paste0("clean_data_hrqol_baseline$",catvars[i])))
                       ,clean_data_hrqol_baseline$race.eth, exclude=NULL)
@@ -66,11 +66,21 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
     T1results_unweighted<-rbind(T1results_unweighted,cbind(labs, tab.to.add))
     }
     
+    #code checking
+    i=1
+    tab.to.add<-table(eval(parse_expr(paste0("clean_data_hrqol_baseline$",catvars[i])))
+                      ,clean_data_hrqol_baseline$race.eth, exclude=NULL)
+    labs<-paste(catvars[i],as.character(rownames(tab.to.add)))
+    T1results_unweighted<-rbind(T1results_unweighted, c(paste(catvar_names[i]),rep(NA,4)))
+    T1results_unweighted<-rbind(T1results_unweighted,cbind(labs, tab.to.add))
+    #end code checking
+    
     colnames(T1results_unweighted)<-c("Variable name", "Non-Latino white", "Black", "Latino", "Other")
     rownames(T1results_unweighted)<-NULL
     T1results_unweighted[is.na(T1results_unweighted[,1]),"Variable name"]<-"Missing"
     
-
+    
+    
 #------------------------------------------------------------------
 # ---Weighted analyses--- #
 #------------------------------------------------------------------
