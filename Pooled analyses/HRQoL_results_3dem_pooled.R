@@ -16,6 +16,10 @@ p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "gee", "geepack",
 # Load clean data#
 #------------------------------------------------------------------
 load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+
+#code checking
+load("C:/Users/tmobley/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+
 clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
 
 #creating indicator variables for age and race/ethnicity
@@ -23,17 +27,27 @@ clean_data_hrqol$black<-ifelse(clean_data_hrqol$race.eth==2,1,0)
 clean_data_hrqol$latino<-ifelse(clean_data_hrqol$race.eth==3,1,0)
 clean_data_hrqol$other<-ifelse(clean_data_hrqol$race.eth==4,1,0)
 
+#code checking
+table(clean_data_hrqol$race.eth, exclude=NULL)
+colSums(clean_data_hrqol[, c("black", "latino", "other")])
+
 clean_data_hrqol$agecat2<-ifelse(as.numeric(clean_data_hrqol$age.cat)==2,1,0)
 clean_data_hrqol$agecat3<-ifelse(as.numeric(clean_data_hrqol$age.cat)==3,1,0)
 clean_data_hrqol$agecat4<-ifelse(as.numeric(clean_data_hrqol$age.cat)==4,1,0)
 clean_data_hrqol$agecat5<-ifelse(as.numeric(clean_data_hrqol$age.cat)==5,1,0)
 clean_data_hrqol$agecat6<-ifelse(as.numeric(clean_data_hrqol$age.cat)==6,1,0)
 
+#code checking
+table(clean_data_hrqol$age.cat, exclude=NULL)
+colSums(clean_data_hrqol[, c("agecat2", "agecat3", "agecat4", "agecat5", "agecat6")])
+
 #saving dementa-free and dementia datasets
 clean_data_hrqol_demprob<-clean_data_hrqol[clean_data_hrqol$dementia.status==1,]
 clean_data_hrqol_demposs<-clean_data_hrqol[clean_data_hrqol$dementia.status==2,]
 clean_data_hrqol_nodem<-clean_data_hrqol[clean_data_hrqol$dementia.status==3,]
 
+#code checking
+table(clean_data_hrqol$dementia.status, useNA = "ifany")
 
 outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
 
