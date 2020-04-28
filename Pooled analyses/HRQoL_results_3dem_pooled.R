@@ -354,6 +354,16 @@ for (i in 1:length(figures)){
 save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
 write.xlsx(res_tbls, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.xlsx")
 
+#code checking
+for (i in 1:length(figures)){
+  ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/",names(figures)[i],".jpg"), 
+         plot=eval(parse_expr(names(figures[i]))), dpi="retina", width = 6.5)
+}
+
+
+save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
+write.xlsx(res_tbls, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.xlsx")
+
 
 
 #------------------------------------------------------------------
