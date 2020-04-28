@@ -127,6 +127,9 @@ results_unweighted_demprob_RD<-unwghtedmod(clean_data_hrqol_demprob, "identity")
 results_unweighted_demposs_RD<-unwghtedmod(clean_data_hrqol_demposs, "identity")
 results_unweighted_nodem_RD<-unwghtedmod(clean_data_hrqol_nodem, "identity")      
 
+#code checking
+results_unweighted_demprob$outresults
+clean_data_hrqol$dementia.status
 
 # ---Weighted analyses--- #
 
@@ -190,7 +193,6 @@ results_weighted_rd_nodem_RD<-wghtedmod(3, clean_data_hrqol$analytic.wgt_scaled,
 
 
 
-
 #------------------------------------------------------------------
 # Format and export results #
 #------------------------------------------------------------------
@@ -227,6 +229,8 @@ res_tbls<-list(results_unweighted_demprob=results_unweighted_demprob$outresults,
                results_weighted_av_nodem_RD=results_weighted_av_nodem_RD$outresults,
                results_weighted_rd_nodem_RD=results_weighted_rd_nodem_RD$outresults)
 
+#code checking
+View(res_tbls)
 
 for (i in 1:length(res_tbls) ){
   
@@ -238,11 +242,20 @@ for (i in 1:length(res_tbls) ){
   
 }
 
+#code checking
+i=1 
+name<-names(res_tbls)[i]
+
+res_tbls[[i]]$dementia<-ifelse(grepl("nodem", substr(name, 0,100000)),3,ifelse(grepl("demposs", substr(name, 0,100000)), 2, 1))
+res_tbls[[i]]$weight<-paste(substr(name, 9, 19))
+res_tbls[[i]]$measure<-ifelse(grepl("RD", substr(name, 0,100000)),"RD","RR")
+#end check
 
 results_all<-do.call(rbind,res_tbls)
 rownames(results_all)<-NULL
 results_forplot<-pivot_longer(results_all, cols = c("black_est", "hispanic_est", "other_est"),
                               names_to="race")
+
 
 results_forplot$LCI<-ifelse(results_forplot$race=="black_est", results_forplot$black_lci, 
                             ifelse(results_forplot$race=="hispanic_est", results_forplot$hispanic_lci,results_forplot$other_lci))
@@ -252,6 +265,8 @@ results_forplot$UCI<-ifelse(results_forplot$race=="black_est", results_forplot$b
 
 results_forplot<- results_forplot[,c("outcome","race", "dementia", "weight", "measure", "value", "LCI", "UCI")]
 
+#code checking
+View(results_forplot)
 
 results_forplot$outcome2<-NA
 results_forplot$outcome2[results_forplot$outcome=="funclimits"]<-"Functional limitations"
@@ -264,7 +279,8 @@ results_forplot$race[results_forplot$race=="black_est"] <- "Black vs. White"
 results_forplot$race[results_forplot$race=="hispanic_est"] <- "Latino vs. White"
 results_forplot$race[results_forplot$race=="other_est"] <- "Other vs. White"
 
-
+#code checking
+View(results_forplot)
 
 
 
