@@ -361,9 +361,9 @@ for (i in 1:length(figures)){
 }
 
 
-save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
-write.xlsx(res_tbls, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.xlsx")
-
+save(results_all,file="C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/HRQOL_pooled.Rdata")
+write.xlsx(res_tbls, file = "C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/HRQOL_pooled.xlsx")
+#end check
 
 
 #------------------------------------------------------------------
@@ -404,6 +404,7 @@ pred_prevs<-function(modelvar){
   return(outset)
 }
 
+
 pred_prev_demprob<-pred_prevs(results_weighted_bl_demprob)
 pred_prev_demposs<-pred_prevs(results_weighted_bl_demposs)
 pred_prev_nodem<-pred_prevs(results_weighted_bl_nodem)
@@ -412,6 +413,10 @@ pred_prev_demprob$dementia<-1
 pred_prev_demposs$dementia<-2
 pred_prev_nodem$dementia<-3
 
+#code checking 
+View(pred_prev_demprob)
+View(pred_prev_demposs)
+View(pred_prev_nodem)
 
 pred_all<-rbind(pred_prev_demprob, pred_prev_demposs, pred_prev_nodem)
 
@@ -419,8 +424,15 @@ pred_list<-list(pred_prev_demprob=pred_prev_demprob,
                 pred_prev_demposs=pred_prev_demposs, 
                 pred_prev_nodem=pred_prev_nodem)
 
+#code checking
+View(pred_list)
+
 save(pred_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
 write.xlsx(pred_list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.xlsx")
+
+#code checking
+save(pred_all,file="C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/predicted_pooled.Rdata")
+write.xlsx(pred_list, file = "C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/predicted_pooled.xlsx")
 
 
 pred_forplot<-pivot_longer(pred_all, cols = c("white_est", "black_est", "latino_est", "other_est"),
@@ -434,6 +446,8 @@ pred_forplot$UCI<-ifelse(pred_forplot$race=="white_est", pred_forplot$white_UCI,
                          ifelse(pred_forplot$race=="black_est", pred_forplot$black_UCI, 
                                 ifelse(pred_forplot$race=="latino_est", pred_forplot$latino_UCI,pred_forplot$other_UCI)))
 
+#code checking
+View(pred_forplot)
 
 pred_forplot<- pred_forplot[,c("outcome","race", "dementia", "value", "LCI", "UCI")]
 
@@ -454,6 +468,8 @@ pred_forplot$race[pred_forplot$race=="black_est"] <- "Black"
 pred_forplot$race[pred_forplot$race=="latino_est"] <- "Latino"
 pred_forplot$race[pred_forplot$race=="other_est"] <- "Other"
 
+#code checking
+View(pred_forplot)
 
 pred_prev_blwt_dem_byrace<-ggplot(data=pred_forplot[pred_forplot$race %in% c("White", "Black", "Latino"),])+
   geom_col(aes(x=race, y=value, group=factor(dementia), 
@@ -475,5 +491,9 @@ pred_prev_blwt_dem_byrace<-ggplot(data=pred_forplot[pred_forplot$race %in% c("Wh
 pred_prev_blwt_dem_byrace
 
 ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/pred_prev_blwt_dem_byrace.jpg"), 
+       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
+
+#code checking
+ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/pred_prev_blwt_dem_byrace.jpg"), 
        plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
 
