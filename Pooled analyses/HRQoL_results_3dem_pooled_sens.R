@@ -16,6 +16,10 @@ p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "gee", "geepack",
 # Load clean data#
 #------------------------------------------------------------------
 load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+
+#TMM loading data for code check
+load("C:/Users/tmobley/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+
 clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
 
 #creating indicator variables for age and race/ethnicity
@@ -29,11 +33,23 @@ clean_data_hrqol$agecat4<-ifelse(as.numeric(clean_data_hrqol$age.cat)==4,1,0)
 clean_data_hrqol$agecat5<-ifelse(as.numeric(clean_data_hrqol$age.cat)==5,1,0)
 clean_data_hrqol$agecat6<-ifelse(as.numeric(clean_data_hrqol$age.cat)==6,1,0)
 
+#code checking
+table(clean_data_hrqol$race.eth, exclude=NULL)
+colSums(clean_data_hrqol[, c("black", "latino", "other")])
+table(clean_data_hrqol$age.cat, exclude=NULL)
+colSums(clean_data_hrqol[, c("agecat2", "agecat3", "agecat4", "agecat5", "agecat6")])
+#end check
+
 #saving dementa-free and dementia datasets
 clean_data_hrqol_demprob<-clean_data_hrqol[clean_data_hrqol$dem_sens1==1,]
 clean_data_hrqol_demposs<-clean_data_hrqol[clean_data_hrqol$dem_sens1==2,]
 clean_data_hrqol_nodem<-clean_data_hrqol[clean_data_hrqol$dem_sens1==3,]
 
+#code checking
+table(clean_data_hrqol$dem_sens1, useNA = "ifany")
+table(clean_data_hrqol_demprob$dem_sens1)
+table(clean_data_hrqol_demposs$dem_sens1)
+table(clean_data_hrqol_nodem$dem_sens1)
 
 outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
 
