@@ -387,6 +387,11 @@ pred_prev_demprob<-pred_prevs(results_weighted_bl_demprob)
 pred_prev_demposs<-pred_prevs(results_weighted_bl_demposs)
 pred_prev_nodem<-pred_prevs(results_weighted_bl_nodem)
 
+#code checking
+View(results_weighted_bl_demposs)
+View(pred_prev_demprob)
+#end check
+
 pred_prev_demprob$dementia<-1
 pred_prev_demposs$dementia<-2
 pred_prev_nodem$dementia<-3
@@ -405,6 +410,9 @@ pred_forplot$UCI<-ifelse(pred_forplot$race=="white_est", pred_forplot$white_UCI,
                          ifelse(pred_forplot$race=="black_est", pred_forplot$black_UCI, 
                                 ifelse(pred_forplot$race=="latino_est", pred_forplot$latino_UCI,pred_forplot$other_UCI)))
 
+#code checking
+View(pred_all)
+View(pred_forplot)
 
 pred_forplot<- pred_forplot[,c("outcome","race", "dementia", "value", "LCI", "UCI")]
 
@@ -448,6 +456,10 @@ pred_prev_blwt_dem_byrace<-ggplot(data=pred_forplot[pred_forplot$race %in% c("Wh
 pred_prev_blwt_dem_byrace
 
 ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/SENS/pred_prev_blwt_dem_byrace_sens.jpg"), 
+       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
+
+#code checking -- save output to local output computer
+ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/pred_prev_blwt_dem_byrace_sens.jpg"), 
        plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
 
 
