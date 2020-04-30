@@ -99,6 +99,7 @@ results_unweighted_nodem_RD<-unwghtedmod(clean_data_hrqol_nodem, "identity")
 
 #code checking
 View(results_unweighted_demprob)
+results_unweighted_demprob$outresults
 
 # ---Weighted analyses--- #
 
@@ -163,6 +164,7 @@ results_weighted_rd_nodem_RD<-wghtedmod(3, clean_data_hrqol$analytic.wgt_scaled,
 #code checking
 View(results_weighted_bl_demprob)
 View(results_weighted_av_demprob_RD)
+results_weighted_bl_demprob$outresults
 
 
 #------------------------------------------------------------------
@@ -201,6 +203,8 @@ res_tbls<-list(results_unweighted_demprob=results_unweighted_demprob$outresults,
                results_weighted_av_nodem_RD=results_weighted_av_nodem_RD$outresults,
                results_weighted_rd_nodem_RD=results_weighted_rd_nodem_RD$outresults)
 
+#code check
+View(res_tbls)
 
 for (i in 1:length(res_tbls) ){
   
@@ -211,6 +215,15 @@ for (i in 1:length(res_tbls) ){
   res_tbls[[i]]$measure<-ifelse(grepl("RD", substr(name, 0,100000)),"RD","RR")
   
 }
+
+#code checking
+i=1 
+name<-names(res_tbls)[i]
+
+res_tbls[[i]]$dementia<-ifelse(grepl("nodem", substr(name, 0,100000)),3,ifelse(grepl("demposs", substr(name, 0,100000)), 2, 1))
+res_tbls[[i]]$weight<-paste(substr(name, 9, 19))
+res_tbls[[i]]$measure<-ifelse(grepl("RD", substr(name, 0,100000)),"RD","RR")
+#end check
 
 
 results_all<-do.call(rbind,res_tbls)
@@ -238,7 +251,9 @@ results_forplot$race[results_forplot$race=="black_est"] <- "Black vs. White"
 results_forplot$race[results_forplot$race=="hispanic_est"] <- "Latino vs. White"
 results_forplot$race[results_forplot$race=="other_est"] <- "Other vs. White"
 
-
+#code checking -- compare results_all and results_forplot
+View(results_forplt)
+View(results_all)
 
 
 
