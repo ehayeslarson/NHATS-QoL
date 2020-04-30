@@ -286,6 +286,11 @@ res_un_RR<-plotresRR("unweighted_")
 res_bl_RR<-plotresRR("weighted_bl")
 res_av_RR<-plotresRR("weighted_av")
 
+#code checking
+plotresRR("unweighted_")
+plotresRR("weighted_bl")
+plotresRR("weighted_av")
+#end check
 
 plotresRD<-function(wt){
   ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" | 
@@ -316,20 +321,29 @@ res_un_RD<-plotresRD("unweighted_")
 res_bl_RD<-plotresRD("weighted_bl")
 res_av_RD<-plotresRD("weighted_av")
 
-
 figures<-list(res_un_RR=res_un_RR, res_av_RR=res_av_RR, res_bl_RR=res_bl_RR, 
               res_un_RD=res_un_RD, res_av_RD=res_av_RD, res_bl_RD=res_bl_RD)
+
+#check code
+View(figures)
 
 for (i in 1:length(figures)){
   ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/SENS/",names(figures)[i],"_sens.jpg"), 
          plot=eval(parse_expr(names(figures[i]))), dpi="retina", width=6.5)
 }
 
-
 save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled_sens.Rdata")
 write.xlsx(res_tbls, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled_sens.xlsx")
 
+#code checking -- save output to compare
+for (i in 1:length(figures)){
+  ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/",names(figures)[i],"_sens.jpg"), 
+         plot=eval(parse_expr(names(figures[i]))), dpi="retina", width=6.5)
+}
 
+save(results_all,file="C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/HRQOL_pooled_sens.Rdata")
+write.xlsx(res_tbls, file = "C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/HRQOL_pooled_sens.xlsx")
+#end check
 
 #------------------------------------------------------------------
 # Standardized predicted prevalences
