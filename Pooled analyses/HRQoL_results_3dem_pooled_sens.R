@@ -97,6 +97,8 @@ results_unweighted_demprob_RD<-unwghtedmod(clean_data_hrqol_demprob, "identity")
 results_unweighted_demposs_RD<-unwghtedmod(clean_data_hrqol_demposs, "identity")
 results_unweighted_nodem_RD<-unwghtedmod(clean_data_hrqol_nodem, "identity")      
 
+#code checking
+View(results_unweighted_demprob)
 
 # ---Weighted analyses--- #
 
@@ -158,7 +160,9 @@ results_weighted_bl_nodem_RD<-wghtedmod(3, clean_data_hrqol$baseline.anwgt_scale
 results_weighted_av_nodem_RD<-wghtedmod(3, clean_data_hrqol$average.anwgt_scaled, "identity")     
 results_weighted_rd_nodem_RD<-wghtedmod(3, clean_data_hrqol$analytic.wgt_scaled, "identity")     
 
-
+#code checking
+View(results_weighted_bl_demprob)
+View(results_weighted_av_demprob_RD)
 
 
 #------------------------------------------------------------------
