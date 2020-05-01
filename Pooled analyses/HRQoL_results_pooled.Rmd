@@ -9,8 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE)
 
 #Load main results
-load("C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
-load("C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
+load("C:/Users/tmobley/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
+load("C:/Users/tmobley/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
 
 ```
 
