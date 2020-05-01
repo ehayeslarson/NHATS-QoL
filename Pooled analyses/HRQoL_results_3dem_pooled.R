@@ -21,7 +21,7 @@ clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
 #creating indicator variables for age and race/ethnicity
 clean_data_hrqol$black<-ifelse(clean_data_hrqol$race.eth==2,1,0)
 clean_data_hrqol$latino<-ifelse(clean_data_hrqol$race.eth==3,1,0)
-clean_data_hrqol$other<-ifelse(clean_data_hrqol$race.eth==4,1,0)
+#POST CODE REVIEW: Removed other indicator variable creation
 
 clean_data_hrqol$agecat2<-ifelse(as.numeric(clean_data_hrqol$age.cat)==2,1,0)
 clean_data_hrqol$agecat3<-ifelse(as.numeric(clean_data_hrqol$age.cat)==3,1,0)
@@ -60,7 +60,7 @@ mean(clean_data_hrqol_temp$count_obs)
 summary(clean_data_hrqol_temp$count_obs)
 
 
-#Proprotion using proxy by race, dementia status
+#Proportion using proxy by race, dementia status
 CreateTableOne("proxy", c("race.eth", "dementia.status"), clean_data_hrqol, "proxy")
 
 # ---Unweighted analyses--- #
@@ -69,30 +69,30 @@ CreateTableOne("proxy", c("race.eth", "dementia.status"), clean_data_hrqol, "pro
 #Relative risk regression models
 
 unwghtedmod<-function(indata,linkfxn){
-  outresults<-data.frame(outcome=outcomes,
-                         black_est=rep(NA,5), hispanic_est=rep(NA,5), other_est=rep(NA,5), 
-                         black_lci=rep(NA,5), hispanic_lci=rep(NA,5),  other_lci=rep(NA,5),
-                         black_uci=rep(NA,5),  hispanic_uci=rep(NA,5), other_uci=rep(NA,5))
+  outresults<-data.frame(outcome=outcomes, #POST CODE REVIEW: removed "other" est, lci, uci from next 3 lines.
+                         black_est=rep(NA,5), hispanic_est=rep(NA,5),  
+                         black_lci=rep(NA,5), hispanic_lci=rep(NA,5), 
+                         black_uci=rep(NA,5),  hispanic_uci=rep(NA,5))
   
   models<-rep(list(NA),5)
   
   for (i in 1:length(outcomes)){
     outcome<-outcomes[i]
     
-    model<-geeglm(as.formula(paste0(outcome,"~black+latino+other+agecat2+agecat3+agecat4+agecat5+agecat6+female")), 
+    model<-geeglm(as.formula(paste0(outcome,"~black+latino+agecat2+agecat3+agecat4+agecat5+agecat6+female")),  #POST CODE REVIEW: removed "other" indep var
                   id=spid, data=indata, corstr="exchangeable", family=poisson(link=linkfxn))
     
     models[[i]]<-model
     
-    for (j in 2:4){
+    for (j in 2:3){ #POST CODE REVIEW: changed j loop to 2-3, results storing in j+2 and j+4 instead of 2-4, j+3, j+6.
       if (linkfxn=="log"){
         outresults[i,j] <- exp(coef(model)[j])
-        outresults[i,j+3] <- exp(coef(model)[j]-1.96*summary(model)$coefficients[j,"Std.err"])
-        outresults[i,j+6] <- exp(coef(model)[j]+1.96*summary(model)$coefficients[j,"Std.err"])
+        outresults[i,j+2] <- exp(coef(model)[j]-1.96*summary(model)$coefficients[j,"Std.err"])
+        outresults[i,j+4] <- exp(coef(model)[j]+1.96*summary(model)$coefficients[j,"Std.err"])
       } else if (linkfxn=="identity"){
         outresults[i,j] <- coef(model)[j]
-        outresults[i,j+3] <- coef(model)[j]-1.96*summary(model)$coefficients[j,"Std.err"]
-        outresults[i,j+6] <- coef(model)[j]+1.96*summary(model)$coefficients[j,"Std.err"]
+        outresults[i,j+2] <- coef(model)[j]-1.96*summary(model)$coefficients[j,"Std.err"]
+        outresults[i,j+4] <- coef(model)[j]+1.96*summary(model)$coefficients[j,"Std.err"]
       }
     }
   }
@@ -111,31 +111,31 @@ results_unweighted_nodem_RD<-unwghtedmod(clean_data_hrqol_nodem, "identity")
 # ---Weighted analyses--- #
 
 wghtedmod<-function(dem,weightvar, linkfxn){
-  outresults<-data.frame(outcome=outcomes,
-                         black_est=rep(NA,5), hispanic_est=rep(NA,5), other_est=rep(NA,5), 
-                         black_lci=rep(NA,5), hispanic_lci=rep(NA,5),  other_lci=rep(NA,5),
-                         black_uci=rep(NA,5),  hispanic_uci=rep(NA,5), other_uci=rep(NA,5))
+  outresults<-data.frame(outcome=outcomes, #POST CODE REVIEW: removed "other" est, lci, uci from next 3 lines.
+                         black_est=rep(NA,5), hispanic_est=rep(NA,5), 
+                         black_lci=rep(NA,5), hispanic_lci=rep(NA,5), 
+                         black_uci=rep(NA,5),  hispanic_uci=rep(NA,5))
   
   models<-rep(list(NA),5)
   
   for (i in 1:length(outcomes)){
     outcome<-outcomes[i]
     
-    model<-geeglm(as.formula(paste0(outcome,"~black+latino+other+agecat2+agecat3+agecat4+agecat5+agecat6+female")), 
+    model<-geeglm(as.formula(paste0(outcome,"~black+latino+agecat2+agecat3+agecat4+agecat5+agecat6+female")),  #POST CODE REVIEW: removed "other" indep var
                   id=spid, data=clean_data_hrqol[clean_data_hrqol$dementia.status==dem,], 
                   corstr="exchangeable", family=poisson(link=linkfxn), weights=weightvar[clean_data_hrqol$dementia.status==dem])
     
     models[[i]]<-model
     
-    for (j in 2:4){
+    for (j in 2:3){ #POST CODE REVIEW: changed j loop to 2-3, results storing in j+2 and j+4 instead of 2-4, j+3, j+6.
       if (linkfxn=="log"){
         outresults[i,j] <- exp(coef(model)[j])
-        outresults[i,j+3] <- exp(coef(model)[j]-1.96*summary(model)$coefficients[j,"Std.err"])
-        outresults[i,j+6] <- exp(coef(model)[j]+1.96*summary(model)$coefficients[j,"Std.err"])
+        outresults[i,j+2] <- exp(coef(model)[j]-1.96*summary(model)$coefficients[j,"Std.err"])
+        outresults[i,j+4] <- exp(coef(model)[j]+1.96*summary(model)$coefficients[j,"Std.err"])
       } else if (linkfxn=="identity"){
         outresults[i,j] <- coef(model)[j]
-        outresults[i,j+3] <- coef(model)[j]-1.96*summary(model)$coefficients[j,"Std.err"]
-        outresults[i,j+6] <- coef(model)[j]+1.96*summary(model)$coefficients[j,"Std.err"]
+        outresults[i,j+2] <- coef(model)[j]-1.96*summary(model)$coefficients[j,"Std.err"]
+        outresults[i,j+4] <- coef(model)[j]+1.96*summary(model)$coefficients[j,"Std.err"]
       }
     }
   }
@@ -221,99 +221,6 @@ for (i in 1:length(res_tbls) ){
 
 results_all<-do.call(rbind,res_tbls)
 rownames(results_all)<-NULL
-results_forplot<-pivot_longer(results_all, cols = c("black_est", "hispanic_est", "other_est"),
-                              names_to="race")
-
-results_forplot$LCI<-ifelse(results_forplot$race=="black_est", results_forplot$black_lci, 
-                            ifelse(results_forplot$race=="hispanic_est", results_forplot$hispanic_lci,results_forplot$other_lci))
-
-results_forplot$UCI<-ifelse(results_forplot$race=="black_est", results_forplot$black_uci, 
-                            ifelse(results_forplot$race=="hispanic_est", results_forplot$hispanic_uci,results_forplot$other_uci))
-
-results_forplot<- results_forplot[,c("outcome","race", "dementia", "weight", "measure", "value", "LCI", "UCI")]
-
-
-results_forplot$outcome2<-NA
-results_forplot$outcome2[results_forplot$outcome=="funclimits"]<-"Functional limitations"
-results_forplot$outcome2[results_forplot$outcome=="pain.bother"]<-"Bothered by pain"
-results_forplot$outcome2[results_forplot$outcome=="poorhealth.bin"]<-"Fair/poor health"
-results_forplot$outcome2[results_forplot$outcome=="prob.dep"]<-"Elevated depressive \nsymptoms"
-results_forplot$outcome2[results_forplot$outcome=="prob.anx"]<-"Elevated anxiety \nsymptoms"
-
-results_forplot$race[results_forplot$race=="black_est"] <- "Black vs. White"
-results_forplot$race[results_forplot$race=="hispanic_est"] <- "Latino vs. White"
-results_forplot$race[results_forplot$race=="other_est"] <- "Other vs. White"
-
-
-
-
-
-plotresRR<-function(wt){
-  ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" | 
-                                 results_forplot$race=="Latino vs. White") & 
-                                results_forplot$measure=="RR" &
-                                results_forplot$weight==wt,])+
-    geom_pointrange(aes(x=factor(outcome2, levels = c("Bothered by pain", "Elevated anxiety \nsymptoms",
-                                                      "Functional limitations", "Elevated depressive \nsymptoms",
-                                                      "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
-                        color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
-    xlab("")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.6)+facet_grid(.~race)+
-    scale_color_manual(name="", breaks=c(1,2,3),
-                                labels=c("Probable dementia", "Possible dementia","No dementia"), 
-                                values=c("navy", "steelblue","lightblue"))+
-    theme_bw()+ 
-    guides(color = guide_legend(override.aes = list(linetype = 0, size=1)))+
-    geom_hline(yintercept=1, colour="black", lwd=1) +
-    theme(axis.text.x = element_text(size=12), 
-          axis.text.y = element_text(size=12), 
-          axis.title.x = element_text(size=14), 
-          axis.title.y = element_text(size=14), 
-          legend.position = "bottom"
-    )+ coord_flip()
-}
-
-res_un_RR<-plotresRR("unweighted_")
-res_bl_RR<-plotresRR("weighted_bl")
-res_av_RR<-plotresRR("weighted_av")
-
-
-plotresRD<-function(wt){
-  ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" | 
-                                 results_forplot$race=="Latino vs. White") & 
-                                results_forplot$measure=="RD" &
-                                results_forplot$weight==wt,])+
-    geom_pointrange(aes(x=factor(outcome2, levels = c("Bothered by pain", "Elevated anxiety \nsymptoms",
-                                                      "Functional limitations", "Elevated depressive \nsymptoms",
-                                                      "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
-                        color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
-    xlab("")+ ylab("Prevalence difference (95% CI)")+ facet_grid(.~race)+
-    scale_color_manual(name="", breaks=c(1,2,3),
-                       labels=c("Probable dementia", "Possible dementia","No dementia"), 
-                       values=c("navy", "steelblue","lightblue"))+
-    theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits=c(-0.15,0.3))+
-    guides(color = guide_legend(override.aes = list(linetype = 0, size=1)))+
-    geom_hline(yintercept=0, colour="black", lwd=1) +
-    theme(axis.text.x = element_text(size=12), 
-          axis.text.y = element_text(size=12), 
-          axis.title.x = element_text(size=14), 
-          axis.title.y = element_text(size=14), 
-          legend.position = "bottom"
-    )+ coord_flip()
-}
-
-res_un_RD<-plotresRD("unweighted_")
-res_bl_RD<-plotresRD("weighted_bl")
-res_av_RD<-plotresRD("weighted_av")
-
-
-figures<-list(res_un_RR=res_un_RR, res_av_RR=res_av_RR, res_bl_RR=res_bl_RR, 
-              res_un_RD=res_un_RD, res_av_RD=res_av_RD, res_bl_RD=res_bl_RD)
-
-for (i in 1:length(figures)){
-  ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/",names(figures)[i],".jpg"), 
-         plot=eval(parse_expr(names(figures[i]))), dpi="retina", width = 6.5)
-}
-
 
 save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
 write.xlsx(res_tbls, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.xlsx")
@@ -328,31 +235,28 @@ pred_prevs<-function(modelvar){
   
   outset<-data.frame(outcome=outcomes, white_est=rep(NA,5), white_LCI=rep(NA,5), white_UCI=rep(NA,5), 
                      black_est=rep(NA,5), black_LCI=rep(NA,5), black_UCI=rep(NA,5), 
-                     latino_est=rep(NA,5), latino_LCI=rep(NA,5), latino_UCI=rep(NA,5), 
-                     other_est=rep(NA,5), other_LCI=rep(NA,5), other_UCI=rep(NA,5))
-  
+                     latino_est=rep(NA,5), latino_LCI=rep(NA,5), latino_UCI=rep(NA,5)) 
+                    #POST CODE REVIEW: removed "other" vars from outset.
   
   for (i in 1:length(outcomes)){
     
     
-    pred_p<-tidy(emmeans(modelvar[[2]][[i]], specs=c("black", "latino", "other"), weights = "proportional"))
+    pred_p<-tidy(emmeans(modelvar[[2]][[i]], specs=c("black", "latino"), weights = "proportional")) #POST CODE REVIEW: removed "other" 
+
+    #POST CODE REVIEW: removed "other" from next 9 lines of code
+    outset$white_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==0])  
+    outset$white_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==0])
+    outset$white_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==0])
     
-    outset$white_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==0 & pred_p$other==0])
-    outset$white_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==0 & pred_p$other==0])
-    outset$white_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==0 & pred_p$other==0])
+    outset$black_est[i]<-exp(pred_p$estimate[pred_p$black==1 & pred_p$latino==0])
+    outset$black_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==1 & pred_p$latino==0])
+    outset$black_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==1 & pred_p$latino==0])
     
-    outset$black_est[i]<-exp(pred_p$estimate[pred_p$black==1 & pred_p$latino==0 & pred_p$other==0])
-    outset$black_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==1 & pred_p$latino==0 & pred_p$other==0])
-    outset$black_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==1 & pred_p$latino==0 & pred_p$other==0])
+    outset$latino_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==1])
+    outset$latino_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==1])
+    outset$latino_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==1])
     
-    outset$latino_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==1 & pred_p$other==0])
-    outset$latino_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==1 & pred_p$other==0])
-    outset$latino_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==1 & pred_p$other==0])
-    
-    outset$other_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==0 & pred_p$other==1])
-    outset$other_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==0 & pred_p$other==1])
-    outset$other_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==0 & pred_p$other==1])
-    
+    #POST CODE REVIEW: removed "other" predictions
   }
   
   return(outset)
@@ -377,57 +281,5 @@ save(pred_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
 write.xlsx(pred_list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.xlsx")
 
 
-pred_forplot<-pivot_longer(pred_all, cols = c("white_est", "black_est", "latino_est", "other_est"),
-                           names_to="race")
 
-pred_forplot$LCI<-ifelse(pred_forplot$race=="white_est", pred_forplot$white_LCI,
-                         ifelse(pred_forplot$race=="black_est", pred_forplot$black_LCI, 
-                                ifelse(pred_forplot$race=="latino_est", pred_forplot$latino_LCI,pred_forplot$other_LCI)))
-
-pred_forplot$UCI<-ifelse(pred_forplot$race=="white_est", pred_forplot$white_UCI,
-                         ifelse(pred_forplot$race=="black_est", pred_forplot$black_UCI, 
-                                ifelse(pred_forplot$race=="latino_est", pred_forplot$latino_UCI,pred_forplot$other_UCI)))
-
-
-pred_forplot<- pred_forplot[,c("outcome","race", "dementia", "value", "LCI", "UCI")]
-
-
-pred_forplot$outcome2<-NA
-pred_forplot$outcome2[pred_forplot$outcome=="funclimits"]<-"Functional limitations"
-pred_forplot$outcome2[pred_forplot$outcome=="pain.bother"]<-"Bothered by pain"
-pred_forplot$outcome2[pred_forplot$outcome=="poorhealth.bin"]<-"Fair/poor health"
-pred_forplot$outcome2[pred_forplot$outcome=="prob.dep"]<-"Elevated depressive symptoms"
-pred_forplot$outcome2[pred_forplot$outcome=="prob.anx"]<-"Elevated anxiety symptoms"
-
-pred_forplot$outcome2<-factor(pred_forplot$outcome2, levels = c("Fair/poor health", "Elevated depressive symptoms",
-                                                                "Functional limitations", "Elevated anxiety symptoms",
-                                                                "Bothered by pain"))
-
-pred_forplot$race[pred_forplot$race=="white_est"] <- "White"
-pred_forplot$race[pred_forplot$race=="black_est"] <- "Black"
-pred_forplot$race[pred_forplot$race=="latino_est"] <- "Latino"
-pred_forplot$race[pred_forplot$race=="other_est"] <- "Other"
-
-
-pred_prev_blwt_dem_byrace<-ggplot(data=pred_forplot[pred_forplot$race %in% c("White", "Black", "Latino"),])+
-  geom_col(aes(x=race, y=value, group=factor(dementia), 
-               fill=factor(dementia)), width=0.75, position=position_dodge(width=.75))+
-  geom_errorbar(aes(x=race, ymin=LCI, ymax=UCI, group=factor(dementia)), width=0.5, position=position_dodge(width=0.75))+
-  xlab(NULL)+ ylab("Standardized predicted prevalence (95% CI)")+ 
-  facet_wrap( ~ outcome2, ncol=1)+
-  scale_fill_manual(name="", labels=c("Probable dementia", "Possible dementia", "No dementia"), values=c("navy", "steelblue", "lightblue"))+
-  theme_bw()+ scale_y_continuous(labels = scales::percent_format(accuracy=1), limits=c(0,0.75))+
-  geom_hline(yintercept=0, colour="black", lwd=0.5) +
-  theme(axis.text.x = element_text(size=14), 
-        axis.text.y = element_text(size=14), 
-        axis.title.x = element_text(size=16), 
-        axis.title.y = element_text(size=16),
-        strip.text.x = element_text(size = 12),
-        legend.position = "bottom"
-  )
-
-pred_prev_blwt_dem_byrace
-
-ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/pred_prev_blwt_dem_byrace.jpg"), 
-       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
 

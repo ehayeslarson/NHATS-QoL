@@ -39,18 +39,18 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
 #------------------------------------------------------------------
   
     
-    T1results_unweighted<-matrix(nrow=1, ncol=5)
+    T1results_unweighted<-matrix(nrow=1, ncol=4) #POST CODE REVIEW changed ncol to 4 from 5
     T1results_unweighted[1,]<- c("Race/ethnicity total",table(clean_data_hrqol_baseline$race.eth))
     
     for (i in 1:length(catvars)){
     tab.to.add<-table(eval(parse_expr(paste0("clean_data_hrqol_baseline$",catvars[i])))
                       ,clean_data_hrqol_baseline$race.eth, exclude=NULL)
     labs<-paste(catvars[i],as.character(rownames(tab.to.add)))
-    T1results_unweighted<-rbind(T1results_unweighted, c(paste(catvar_names[i]),rep(NA,4)))
+    T1results_unweighted<-rbind(T1results_unweighted, c(paste(catvar_names[i]),rep(NA,3))) #POST CODE REVIEW changed to 3 from 4
     T1results_unweighted<-rbind(T1results_unweighted,cbind(labs, tab.to.add))
     }
     
-    colnames(T1results_unweighted)<-c("Variable name", "Non-Latino white", "Black", "Latino", "Other")
+    colnames(T1results_unweighted)<-c("Variable name", "Non-Latino white", "Black", "Latino") #POST CODE REVIEW removed "Other"
     rownames(T1results_unweighted)<-NULL
     T1results_unweighted[is.na(T1results_unweighted[,1]),"Variable name"]<-"Missing"
     
@@ -64,7 +64,7 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
   svytable(~edu.cat+race.eth, nhats_design, exclude=NULL, round=T, na.action=na.pass, addNA=TRUE)
   
   
-  T1results_weighted<-matrix(nrow=1, ncol=5)
+  T1results_weighted<-matrix(nrow=1, ncol=4) #POST CODE REVIEW changed ncol to 4 from 5
   T1results_weighted[1,]<- c("Race/ethnicity total",
                              svytable(~race.eth, nhats_design, exclude=NULL, round=T, 
                                       na.action=na.pass, addNA=TRUE))
@@ -73,11 +73,11 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
     tab.to.add<-svytable(~eval(parse_expr(paste0("clean_data_hrqol_baseline$",catvars[i])))+race.eth, 
                          nhats_design, exclude=NULL, round=T, na.action=na.pass, addNA=TRUE)
     labs<-paste(catvars[i],as.character(rownames(tab.to.add)))
-    T1results_weighted<-rbind(T1results_weighted, c(paste(catvar_names[i]),rep(NA,4)))
+    T1results_weighted<-rbind(T1results_weighted, c(paste(catvar_names[i]),rep(NA,3))) #POST CODE REVIEW changed to 3 from 4
     T1results_weighted<-rbind(T1results_weighted,cbind(labs, tab.to.add))
   }
   
-  colnames(T1results_weighted)<-c("Variable name", "Non-Latino white", "Black", "Latino", "Other")
+  colnames(T1results_weighted)<-c("Variable name", "Non-Latino white", "Black", "Latino") #POST CODE REVIEW removed "Other"
   rownames(T1results_weighted)<-NULL
   T1results_weighted[is.na(T1results_weighted[,1]),"Variable name"]<-"Missing"
   
