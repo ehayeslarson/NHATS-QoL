@@ -18,6 +18,10 @@ p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "gee", "geepack",
 load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
 clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
 
+#POST CODE REVIEW: added % of obs that are complete case.
+pctcomplete<-100*nrow(clean_data_hrqol)/nrow(clean_data)
+pctcomplete
+
 #creating indicator variables for age and race/ethnicity
 clean_data_hrqol$black<-ifelse(clean_data_hrqol$race.eth==2,1,0)
 clean_data_hrqol$latino<-ifelse(clean_data_hrqol$race.eth==3,1,0)
