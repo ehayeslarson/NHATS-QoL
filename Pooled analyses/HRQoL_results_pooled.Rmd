@@ -42,25 +42,25 @@ results_forplot<- results_forplot[,c("outcome","race", "dementia", "weight", "me
 
 
 results_forplot$outcome2<-NA
-results_forplot$outcome2[results_forplot$outcome=="funclimits"]<-"Functional limitations"
+results_forplot$outcome2[results_forplot$outcome=="funclimits"]<-"Physical functional \nlimitations"
 results_forplot$outcome2[results_forplot$outcome=="pain.bother"]<-"Bothered by pain"
 results_forplot$outcome2[results_forplot$outcome=="poorhealth.bin"]<-"Fair/poor health"
 results_forplot$outcome2[results_forplot$outcome=="prob.dep"]<-"Elevated depressive \nsymptoms"
 results_forplot$outcome2[results_forplot$outcome=="prob.anx"]<-"Elevated anxiety \nsymptoms"
 
-results_forplot$race[results_forplot$race=="black_est"] <- "Black vs. White"
-results_forplot$race[results_forplot$race=="hispanic_est"] <- "Latino vs. White"
+results_forplot$race[results_forplot$race=="black_est"] <- "Black vs. white"
+results_forplot$race[results_forplot$race=="hispanic_est"] <- "Latino vs. white"
 
 
 
 
 plotresRR<-function(wt){
-  ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" | 
-                                 results_forplot$race=="Latino vs. White") & 
+  ggplot(data=results_forplot[(results_forplot$race=="Black vs. white" | 
+                                 results_forplot$race=="Latino vs. white") & 
                                 results_forplot$measure=="RR" &
                                 results_forplot$weight==wt,])+
     geom_pointrange(aes(x=factor(outcome2, levels = c("Bothered by pain", "Elevated anxiety \nsymptoms",
-                                                      "Functional limitations", "Elevated depressive \nsymptoms",
+                                                      "Physical functional \nlimitations", "Elevated depressive \nsymptoms",
                                                       "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
                         color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
     xlab("")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.6)+facet_grid(.~race)+
@@ -84,12 +84,12 @@ res_av_RR<-plotresRR("weighted_av")
 
 
 plotresRD<-function(wt){
-  ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" | 
-                                 results_forplot$race=="Latino vs. White") & 
+  ggplot(data=results_forplot[(results_forplot$race=="Black vs. white" | 
+                                 results_forplot$race=="Latino vs. white") & 
                                 results_forplot$measure=="RD" &
                                 results_forplot$weight==wt,])+
     geom_pointrange(aes(x=factor(outcome2, levels = c("Bothered by pain", "Elevated anxiety \nsymptoms",
-                                                      "Functional limitations", "Elevated depressive \nsymptoms",
+                                                      "Physical functional \nlimitations", "Elevated depressive \nsymptoms",
                                                       "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
                         color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
     xlab("")+ ylab("Prevalence difference (95% CI)")+ facet_grid(.~race)+
@@ -146,15 +146,15 @@ pred_forplot<- pred_forplot[,c("outcome","race", "dementia", "value", "LCI", "UC
 
 
 pred_forplot$outcome2<-NA
-pred_forplot$outcome2[pred_forplot$outcome=="funclimits"]<-"Functional limitations"
+pred_forplot$outcome2[pred_forplot$outcome=="funclimits"]<-"Physical functional limitations"
 pred_forplot$outcome2[pred_forplot$outcome=="pain.bother"]<-"Bothered by pain"
 pred_forplot$outcome2[pred_forplot$outcome=="poorhealth.bin"]<-"Fair/poor health"
 pred_forplot$outcome2[pred_forplot$outcome=="prob.dep"]<-"Elevated depressive symptoms"
 pred_forplot$outcome2[pred_forplot$outcome=="prob.anx"]<-"Elevated anxiety symptoms"
 
 pred_forplot$outcome2<-factor(pred_forplot$outcome2, levels = c("Fair/poor health", "Elevated depressive symptoms",
-                                                                "Functional limitations", "Elevated anxiety symptoms",
-                                                                "Bothered by pain"))
+                                                                "Physical functional limitations", "Elevated anxiety
+                                                                symptoms", "Bothered by pain"))
 
 pred_forplot$race[pred_forplot$race=="white_est"] <- "White"
 pred_forplot$race[pred_forplot$race=="black_est"] <- "Black"
@@ -222,26 +222,26 @@ results_forplot<- results_forplot[,c("outcome","race", "dementia", "weight", "me
 
 
 results_forplot$outcome2<-NA
-results_forplot$outcome2[results_forplot$outcome=="funclimits"]<-"Functional limitations"
+results_forplot$outcome2[results_forplot$outcome=="funclimits"]<-"Physical functional \nlimitations"
 results_forplot$outcome2[results_forplot$outcome=="pain.bother"]<-"Bothered by pain"
 results_forplot$outcome2[results_forplot$outcome=="poorhealth.bin"]<-"Fair/poor health"
 results_forplot$outcome2[results_forplot$outcome=="prob.dep"]<-"Elevated depressive \nsymptoms"
 results_forplot$outcome2[results_forplot$outcome=="prob.anx"]<-"Elevated anxiety \nsymptoms"
 
-results_forplot$race[results_forplot$race=="black_est"] <- "Black vs. White"
-results_forplot$race[results_forplot$race=="hispanic_est"] <- "Latino vs. White"
+results_forplot$race[results_forplot$race=="black_est"] <- "Black vs. white"
+results_forplot$race[results_forplot$race=="hispanic_est"] <- "Latino vs. white"
 
 
 
 
 
 plotresRR<-function(wt){
-  ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" | 
-                                 results_forplot$race=="Latino vs. White") & 
+  ggplot(data=results_forplot[(results_forplot$race=="Black vs. white" | 
+                                 results_forplot$race=="Latino vs. white") & 
                                 results_forplot$measure=="RR" &
                                 results_forplot$weight==wt,])+
     geom_pointrange(aes(x=factor(outcome2, levels = c("Bothered by pain", "Elevated anxiety \nsymptoms",
-                                                      "Functional limitations", "Elevated depressive \nsymptoms",
+                                                      "Physical functional \nlimitations", "Elevated depressive \nsymptoms",
                                                       "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
                         color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
     xlab("")+ ylab("Prevalence ratio (95% CI)")+ ylim(0.7,2.7)+facet_grid(.~race)+
@@ -266,12 +266,12 @@ res_av_RR<-plotresRR("weighted_av")
 
 
 plotresRD<-function(wt){
-  ggplot(data=results_forplot[(results_forplot$race=="Black vs. White" | 
-                                 results_forplot$race=="Latino vs. White") & 
+  ggplot(data=results_forplot[(results_forplot$race=="Black vs. white" | 
+                                 results_forplot$race=="Latino vs. white") & 
                                 results_forplot$measure=="RD" &
                                 results_forplot$weight==wt,])+
     geom_pointrange(aes(x=factor(outcome2, levels = c("Bothered by pain", "Elevated anxiety \nsymptoms",
-                                                      "Functional limitations", "Elevated depressive \nsymptoms",
+                                                      "Physical functional \nlimitations", "Elevated depressive \nsymptoms",
                                                       "Fair/poor health")), y=value, ymin=LCI, ymax=UCI, group=factor(dementia, levels=c(3,2,1)), 
                         color=factor(dementia, levels=c(1,2,3))), position=position_dodge(width=0.6), size=1, shape=15)+
     xlab("")+ ylab("Prevalence difference (95% CI)")+ facet_grid(.~race)+
@@ -328,15 +328,15 @@ pred_forplot<- pred_forplot[,c("outcome","race", "dementia", "value", "LCI", "UC
 
 
 pred_forplot$outcome2<-NA
-pred_forplot$outcome2[pred_forplot$outcome=="funclimits"]<-"Functional limitations"
+pred_forplot$outcome2[pred_forplot$outcome=="funclimits"]<-"Physical functional limitations"
 pred_forplot$outcome2[pred_forplot$outcome=="pain.bother"]<-"Bothered by pain"
 pred_forplot$outcome2[pred_forplot$outcome=="poorhealth.bin"]<-"Fair/poor health"
 pred_forplot$outcome2[pred_forplot$outcome=="prob.dep"]<-"Elevated depressive symptoms"
 pred_forplot$outcome2[pred_forplot$outcome=="prob.anx"]<-"Elevated anxiety symptoms"
 
 pred_forplot$outcome2<-factor(pred_forplot$outcome2, levels = c("Fair/poor health", "Elevated depressive symptoms",
-                                                                "Functional limitations", "Elevated anxiety symptoms",
-                                                                "Bothered by pain"))
+                                                                "Physical functional limitations", "Elevated anxiety
+                                                                symptoms", "Bothered by pain"))
 
 pred_forplot$race[pred_forplot$race=="white_est"] <- "White"
 pred_forplot$race[pred_forplot$race=="black_est"] <- "Black"
