@@ -651,6 +651,14 @@ table(clean_data_hrqol$dementia.status, clean_data_hrqol$dem_sens1, clean_data_h
 table(clean_data_hrqol$age.cat,  clean_data_hrqol$dem_sens0, clean_data_hrqol$race.eth,exclude=NULL) #1. Use original var
 table(clean_data_hrqol$age.cat,  clean_data_hrqol$dem_sens1, clean_data_hrqol$race.eth,exclude=NULL) #1. Use race-specific 1.5SD 
 
+
+
+##POST CODE REVIEW
+#Drop the "other" race/ethnicity group
+clean_data <- clean_data %>% filter(.,race.eth!=4)
+#Check work
+table(clean_data$race.eth)
+
 #------------------------------------------------------------------
 # Save clean data and remove temporary objects
 #------------------------------------------------------------------
