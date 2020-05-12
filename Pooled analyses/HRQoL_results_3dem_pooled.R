@@ -16,6 +16,10 @@ p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "gee", "geepack",
 # Load clean data#
 #------------------------------------------------------------------
 load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+
+#code checking
+load("C:/Users/tmobley/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+
 clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
 
 #POST CODE REVIEW: added % of obs that are complete case.
@@ -27,17 +31,27 @@ clean_data_hrqol$black<-ifelse(clean_data_hrqol$race.eth==2,1,0)
 clean_data_hrqol$latino<-ifelse(clean_data_hrqol$race.eth==3,1,0)
 #POST CODE REVIEW: Removed other indicator variable creation
 
+#code checking
+table(clean_data_hrqol$race.eth, exclude=NULL)
+colSums(clean_data_hrqol[, c("black", "latino", "other")])
+
 clean_data_hrqol$agecat2<-ifelse(as.numeric(clean_data_hrqol$age.cat)==2,1,0)
 clean_data_hrqol$agecat3<-ifelse(as.numeric(clean_data_hrqol$age.cat)==3,1,0)
 clean_data_hrqol$agecat4<-ifelse(as.numeric(clean_data_hrqol$age.cat)==4,1,0)
 clean_data_hrqol$agecat5<-ifelse(as.numeric(clean_data_hrqol$age.cat)==5,1,0)
 clean_data_hrqol$agecat6<-ifelse(as.numeric(clean_data_hrqol$age.cat)==6,1,0)
 
+#code checking
+table(clean_data_hrqol$age.cat, exclude=NULL)
+colSums(clean_data_hrqol[, c("agecat2", "agecat3", "agecat4", "agecat5", "agecat6")])
+
 #saving dementa-free and dementia datasets
 clean_data_hrqol_demprob<-clean_data_hrqol[clean_data_hrqol$dementia.status==1,]
 clean_data_hrqol_demposs<-clean_data_hrqol[clean_data_hrqol$dementia.status==2,]
 clean_data_hrqol_nodem<-clean_data_hrqol[clean_data_hrqol$dementia.status==3,]
 
+#code checking
+table(clean_data_hrqol$dementia.status, useNA = "ifany")
 
 outcomes<-c("prob.dep", "prob.anx", "poorhealth.bin", "pain.bother", "funclimits")
 
@@ -54,6 +68,9 @@ count_obs<-aggregate(cbind(count_obs = spid) ~ spid,
 
 clean_data_hrqol_temp<-merge(clean_data_hrqol,count_obs, by="spid", all.x = T)
 
+#code checking
+dim(clean_data_hrqol_temp)
+
 clean_data_hrqol_temp <- clean_data_hrqol_temp  %>% distinct(spid, race.eth, count_obs) 
 
 tapply(clean_data_hrqol_temp$count_obs, clean_data_hrqol_temp$race.eth, mean)
@@ -66,6 +83,9 @@ summary(clean_data_hrqol_temp$count_obs)
 
 #Proportion using proxy by race, dementia status
 CreateTableOne("proxy", c("race.eth", "dementia.status"), clean_data_hrqol, "proxy")
+
+#code checking
+table(clean_data_hrqol$proxy, clean_data_hrqol$race.eth, clean_data_hrqol$dementia.status)
 
 # ---Unweighted analyses--- #
 
@@ -111,6 +131,9 @@ results_unweighted_demprob_RD<-unwghtedmod(clean_data_hrqol_demprob, "identity")
 results_unweighted_demposs_RD<-unwghtedmod(clean_data_hrqol_demposs, "identity")
 results_unweighted_nodem_RD<-unwghtedmod(clean_data_hrqol_nodem, "identity")      
 
+#code checking
+results_unweighted_demprob$outresults
+clean_data_hrqol$dementia.status
 
 # ---Weighted analyses--- #
 
@@ -174,7 +197,6 @@ results_weighted_rd_nodem_RD<-wghtedmod(3, clean_data_hrqol$analytic.wgt_scaled,
 
 
 
-
 #------------------------------------------------------------------
 # Format and export results #
 #------------------------------------------------------------------
@@ -211,6 +233,8 @@ res_tbls<-list(results_unweighted_demprob=results_unweighted_demprob$outresults,
                results_weighted_av_nodem_RD=results_weighted_av_nodem_RD$outresults,
                results_weighted_rd_nodem_RD=results_weighted_rd_nodem_RD$outresults)
 
+#code checking
+View(res_tbls)
 
 for (i in 1:length(res_tbls) ){
   
@@ -222,13 +246,37 @@ for (i in 1:length(res_tbls) ){
   
 }
 
+#code checking
+i=1 
+name<-names(res_tbls)[i]
+
+res_tbls[[i]]$dementia<-ifelse(grepl("nodem", substr(name, 0,100000)),3,ifelse(grepl("demposs", substr(name, 0,100000)), 2, 1))
+res_tbls[[i]]$weight<-paste(substr(name, 9, 19))
+res_tbls[[i]]$measure<-ifelse(grepl("RD", substr(name, 0,100000)),"RD","RR")
+#end check
 
 results_all<-do.call(rbind,res_tbls)
 rownames(results_all)<-NULL
 
+#code checking
+View(results_forplot)
+
+#code checking
+View(results_forplot)
+
 save(results_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
 write.xlsx(res_tbls, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.xlsx")
 
+#code checking
+for (i in 1:length(figures)){
+  ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/",names(figures)[i],".jpg"), 
+         plot=eval(parse_expr(names(figures[i]))), dpi="retina", width = 6.5)
+}
+
+
+save(results_all,file="C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/HRQOL_pooled.Rdata")
+write.xlsx(res_tbls, file = "C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/HRQOL_pooled.xlsx")
+#end check
 
 
 #------------------------------------------------------------------
@@ -266,6 +314,7 @@ pred_prevs<-function(modelvar){
   return(outset)
 }
 
+
 pred_prev_demprob<-pred_prevs(results_weighted_bl_demprob)
 pred_prev_demposs<-pred_prevs(results_weighted_bl_demposs)
 pred_prev_nodem<-pred_prevs(results_weighted_bl_nodem)
@@ -274,6 +323,10 @@ pred_prev_demprob$dementia<-1
 pred_prev_demposs$dementia<-2
 pred_prev_nodem$dementia<-3
 
+#code checking 
+View(pred_prev_demprob)
+View(pred_prev_demposs)
+View(pred_prev_nodem)
 
 pred_all<-rbind(pred_prev_demprob, pred_prev_demposs, pred_prev_nodem)
 
@@ -281,9 +334,23 @@ pred_list<-list(pred_prev_demprob=pred_prev_demprob,
                 pred_prev_demposs=pred_prev_demposs, 
                 pred_prev_nodem=pred_prev_nodem)
 
+#code checking
+View(pred_list)
+
 save(pred_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
 write.xlsx(pred_list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.xlsx")
 
+#code checking
+save(pred_all,file="C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/predicted_pooled.Rdata")
+write.xlsx(pred_list, file = "C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/predicted_pooled.xlsx")
 
 
+#code checking
+View(pred_forplot)
 
+#code checking
+View(pred_forplot)
+
+#code checking
+ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/pred_prev_blwt_dem_byrace.jpg"), 
+       plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)

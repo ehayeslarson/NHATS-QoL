@@ -11,21 +11,39 @@ if (!require("pacman"))
 
 p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "survey")
 
+#get rid of scientific notation
+options(scipen = 999)
+
 #------------------------------------------------------------------
 # Load data and do data cleaning #
 #------------------------------------------------------------------
-raw_data<-read_sas("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
+#Figuring out my data path
+library(here)
+
+raw_data<-read_sas("/Users/CrystalShaw/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
 
 clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned variables
 
+#Code review
+head(clean_data)
+head(raw_data$spid)
+
 #Bringing in observation indicator variables. 
 clean_data$round<-raw_data$round 
+
+#Code review
+head(clean_data)
+head(raw_data$round)
 
 #EHL notes that these are for the full dataset, prior to dropping observations with missing data. 
 #These need to be recalculated for complete case datasets. 
 clean_data$first.obs<-raw_data$first_obs
 clean_data$count.obs<-raw_data$count_obs
 clean_data$last.obs<-raw_data$last_obs
+
+#Code checking
+head(clean_data)
+head(raw_data[, c("first_obs", "count_obs", "last_obs")])
 
 
 #Cleaning categorical age variables
@@ -37,13 +55,18 @@ table(raw_data$bl_agecat,exclude=NULL)
                      levels = c(1,2,3,4,5,6),
                      labels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", "85 to 89", "90+")) 
   table(clean_data$age.cat, raw_data$intvrage, exclude=NULL)
-
+  
+  #Code checking
+  sum(is.na(clean_data$age.cat))
 
   clean_data$baseline.age<-raw_data$bl_agecat
   clean_data$baseline.age <- ordered(clean_data$baseline.age,
                               levels = c(1,2,3,4,5,6),
                               labels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", "85 to 89", "90+")) 
   table(clean_data$baseline.age, raw_data$bl_agecat, exclude=NULL)
+  
+  #Code checking
+  sum(is.na(clean_data$baseline.age))
 
 
 #Cleaning selection variable (derived dementia variable)
@@ -68,10 +91,18 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   clean_data$analytic.wgt<-raw_data$anfinwgt0
   clean_data$analytic.wgt_scaled<-clean_data$analytic.wgt/sum(clean_data$analytic.wgt)
   
+  #Code checking
+  sum(is.na(raw_data$anfinwgt0)) #there's no missing weights
+  hist(raw_data$anfinwgt0)
+  sum(raw_data$anfinwgt0 == 0) #there's no zero weights
+  
   #Baseline analytic weight
   summary(raw_data$bl_anfinwgt0, exclude=NULL)
   clean_data$baseline.anwgt<-raw_data$bl_anfinwgt0 
   clean_data$baseline.anwgt_scaled<-clean_data$baseline.anwgt/sum(clean_data$baseline.anwgt)
+  
+  #Code checking
+  hist(clean_data$baseline.anwgt_scaled)
   
   #average analytic weight
   mean_by_person <- raw_data %>% 
@@ -83,6 +114,15 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   
   summary(clean_data$diff.anwgt)
   summary(clean_data$max.anwgt)
+  
+  #Code checking
+  hist(mean_by_person$diff.anwgt)
+  dim(clean_data)
+  dim(mean_by_person)
+  colnames(mean_by_person)
+  head(clean_data$average.anwgt)
+  tail(clean_data$average.anwgt)
+  hist(clean_data$average.anwgt_scaled)
   
   #EHL checking
     # clean_data2<- clean_data %>% mutate(bigwtchange=(diff.anwgt>5099))
@@ -216,6 +256,15 @@ table(temp_iadl6, raw_data$dreshelp, exclude=NULL) #check coding
 temp_iadl.max<-pmax(temp_iadl1, temp_iadl2, temp_iadl3, temp_iadl4, temp_iadl5, temp_iadl6)
 table(temp_iadl.max, exclude=NULL)
 
+#Code checking
+head(which(is.na(temp_iadl.max)))
+temp_iadls <- cbind(temp_iadl1, temp_iadl2, temp_iadl3, temp_iadl4, temp_iadl5, 
+                    temp_iadl6)
+temp_iadls[30, ]
+pmax(temp_iadl1, temp_iadl2, temp_iadl3, temp_iadl4, temp_iadl5, 
+     temp_iadl6, na.rm = TRUE)
+
+
 temp_funclimits<-(temp_iadl.max==1 | temp_iadl1==1 | temp_iadl2==1 | temp_iadl3==1 | temp_iadl4==1 | temp_iadl5==1 | temp_iadl6==1)
 table(temp_funclimits, temp_iadl.max, exclude=NULL)
 
@@ -308,7 +357,8 @@ clean_data$edu.7cat<-ordered(clean_data$edu.7cat,
 
 table(clean_data$edu.cat,clean_data$edu.7cat, exclude=NULL)
 
-table(clean_data$edu.cat, clean_data$edu.bin, exclude=NULL)
+#Didn't create?
+#table(clean_data$edu.cat, clean_data$edu.bin, exclude=NULL)
 
 #Residential status
 table(raw_data$resid, exclude=NULL)
@@ -461,7 +511,7 @@ table(raw_data$datena_score, exclude=NULL)
 clean_data$datena.sum <- raw_data$datena_score
   table(raw_data$datena_score, clean_data$datena.sum, exclude=NULL)  
   
-#Executive function domain: cock drawing score
+#Executive function domain: clock drawing score
 table(raw_data$clock_scorer, exclude=NULL)
 clean_data$clock.score<-raw_data$clock_scorer
 
@@ -576,6 +626,9 @@ for (i in 0:1) {
 
 
 clean_data[,c("dem_sens0","dem_sens1")]<-NA
+
+#Code check
+head(clean_data[which(clean_data[, "domain.sum0"] != 0), ])
 
 #Create dem_sens0 to check that it matches NHATS original derived dementia.status variable
 clean_data<-clean_data %>% mutate(dem_sens0=replace(dem_sens0, (clean_data$sr.demalz==1 | clean_data$ad8.score>=2 | clean_data$domain.sum0>=2), 1))
