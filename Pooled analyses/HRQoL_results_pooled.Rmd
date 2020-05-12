@@ -24,8 +24,8 @@ p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "gee", "geepack",
 
 ```{r Main_analysis}
 #Load main results
-load("C:/Users/tmobley/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
-load("C:/Users/tmobley/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
+load("C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
+load("C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
 
 #Formatting dataset for plotting
 #POST CODE REVIEW: removed all "other" references in this code chun (only appeared in lines 32-55)
