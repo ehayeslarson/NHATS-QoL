@@ -35,7 +35,7 @@ clean_data_hrqol$agecat6<-ifelse(as.numeric(clean_data_hrqol$age.cat)==6,1,0)
 
 #code checking
 table(clean_data_hrqol$race.eth, exclude=NULL)
-colSums(clean_data_hrqol[, c("black", "latino", "other")])
+colSums(clean_data_hrqol[, c("black", "latino")])
 table(clean_data_hrqol$age.cat, exclude=NULL)
 colSums(clean_data_hrqol[, c("agecat2", "agecat3", "agecat4", "agecat5", "agecat6")])
 #end check
