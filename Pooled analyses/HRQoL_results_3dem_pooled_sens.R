@@ -263,30 +263,30 @@ pred_prevs<-function(modelvar){
   
   outset<-data.frame(outcome=outcomes, white_est=rep(NA,5), white_LCI=rep(NA,5), white_UCI=rep(NA,5), 
                      black_est=rep(NA,5), black_LCI=rep(NA,5), black_UCI=rep(NA,5), 
-                     latino_est=rep(NA,5), latino_LCI=rep(NA,5), latino_UCI=rep(NA,5), 
-                     other_est=rep(NA,5), other_LCI=rep(NA,5), other_UCI=rep(NA,5))
+                     latino_est=rep(NA,5), latino_LCI=rep(NA,5), latino_UCI=rep(NA,5)) 
+                     #POST CODE REVIEW: removed others
   
   
   for (i in 1:length(outcomes)){
     
+    #POST CODE REVIEW: removed others from rows 220-236
+    pred_p<-tidy(emmeans(modelvar[[2]][[i]], specs=c("black", "latino"), weights = "proportional"))
     
-    pred_p<-tidy(emmeans(modelvar[[2]][[i]], specs=c("black", "latino", "other"), weights = "proportional"))
+    outset$white_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==0])
+    outset$white_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==0])
+    outset$white_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==0])
     
-    outset$white_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==0 & pred_p$other==0])
-    outset$white_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==0 & pred_p$other==0])
-    outset$white_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==0 & pred_p$other==0])
+    outset$black_est[i]<-exp(pred_p$estimate[pred_p$black==1 & pred_p$latino==0])
+    outset$black_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==1 & pred_p$latino==0])
+    outset$black_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==1 & pred_p$latino==0])
     
-    outset$black_est[i]<-exp(pred_p$estimate[pred_p$black==1 & pred_p$latino==0 & pred_p$other==0])
-    outset$black_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==1 & pred_p$latino==0 & pred_p$other==0])
-    outset$black_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==1 & pred_p$latino==0 & pred_p$other==0])
+    outset$latino_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==1])
+    outset$latino_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==1])
+    outset$latino_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==1])
     
-    outset$latino_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==1 & pred_p$other==0])
-    outset$latino_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==1 & pred_p$other==0])
-    outset$latino_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==1 & pred_p$other==0])
-    
-    outset$other_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==0 & pred_p$other==1])
-    outset$other_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==0 & pred_p$other==1])
-    outset$other_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==0 & pred_p$other==1])
+    outset$other_est[i]<-exp(pred_p$estimate[pred_p$black==0 & pred_p$latino==0])
+    outset$other_LCI[i]<-exp(pred_p$asymp.LCL[pred_p$black==0 & pred_p$latino==0])
+    outset$other_UCI[i]<-exp(pred_p$asymp.UCL[pred_p$black==0 & pred_p$latino==0])
     
   }
   
