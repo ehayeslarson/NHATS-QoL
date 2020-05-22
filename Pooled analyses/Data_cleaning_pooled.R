@@ -20,7 +20,7 @@ options(scipen = 999)
 #Figuring out my data path
 library(here)
 
-raw_data<-read_sas("/Users/CrystalShaw/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
+raw_data<-read_sas("/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
 
 clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned variables
 
@@ -533,8 +533,15 @@ clean_data$comp.case.HRQoL<-complete.cases(clean_data[c("spid", "round", "first.
 
 table(clean_data[!is.na(clean_data$race.eth),"comp.case.HRQoL"], exclude=NULL)
 
-
-    #EHL testing
+#POST CODE REVIEW:
+#Checking number of individuals excluded based on race being missing/other
+idlist<-clean_data%>% distinct(spid)
+idlist<-idlist[,1]
+clean_data_unique<-clean_data %>% filter(., first.obs==1, spid %in% idlist)
+table(clean_data_unique$race.eth, exclude=NULL)
+nrow(clean_data_unique[clean_data_unique$race.eth %in% c(1:3),])/nrow(clean_data_unique)
+    
+#EHL testing
     #nrow(clean_data[!is.na(clean_data$race.eth) & clean_data$comp.case.HRQoL==1,])/nrow(clean_data[!is.na(clean_data$race.eth),])
     #1475/nrow(clean_data)
     #test<- clean_data %>% group_by(round) %>% filter(comp.case.HRQoL==T) %>% summarise(., n())
@@ -657,7 +664,7 @@ table(clean_data_hrqol$age.cat,  clean_data_hrqol$dem_sens1, clean_data_hrqol$ra
 #Drop the "other" race/ethnicity group
 clean_data <- clean_data %>% filter(.,race.eth!=4)
 #Check work
-table(clean_data$race.eth)
+table(clean_data$race.eth, exclude=NULL)
 
 #------------------------------------------------------------------
 # Save clean data and remove temporary objects
