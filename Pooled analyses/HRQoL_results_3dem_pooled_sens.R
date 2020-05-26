@@ -321,10 +321,10 @@ save(pred_all,file="C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled_sens.Rda
 write.xlsx(pred_list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled_sens.xlsx")
 
 
-
-
-
 #code checking -- save output to local output computer
+save(pred_all,file="C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/predicted_pooled_sens.Rdata")
+write.xlsx(pred_list, file = "C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/predicted_pooled_sens.xlsx")
+
 ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/pred_prev_blwt_dem_byrace_sens.jpg"), 
        plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
 
