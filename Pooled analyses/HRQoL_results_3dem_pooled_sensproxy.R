@@ -44,6 +44,10 @@ colSums(clean_data_hrqol[, c("agecat2", "agecat3", "agecat4", "agecat5", "agecat
 #PROXY removing proxy respondents:
 clean_data_hrqol<-clean_data_hrqol[clean_data_hrqol$proxy==0,]
 
+#code checking
+table(clean_data_hrqol$proxy, exclude=NULL)
+table(clean_data_hrqol$dementia.status, exclude=NULL)
+
 #saving dementa-free and dementia datasets
 clean_data_hrqol_demprob<-clean_data_hrqol[clean_data_hrqol$dementia.status==1,]
 clean_data_hrqol_demposs<-clean_data_hrqol[clean_data_hrqol$dementia.status==2,]
