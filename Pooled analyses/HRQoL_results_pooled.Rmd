@@ -376,8 +376,12 @@ ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/SENS/pred_pre
 
 ```{r Noproxy_analysis}
 #Load main results
-load("C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled_noproxy.Rdata")
-load("C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled_noproxy.Rdata")
+#load("C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled_noproxy.Rdata")
+#load("C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled_noproxy.Rdata")
+
+#load data for code checking
+load("C:/Users/tmobley/Box/NHATS/OUTPUT/HRQOL_pooled_noproxy.Rdata")
+load("C:/Users/tmobley/Box/NHATS/OUTPUT/predicted_pooled_noproxy.Rdata")
 
 #Formatting dataset for plotting
 #POST CODE REVIEW: removed all "other" references in this code chun (only appeared in lines 32-55)
@@ -464,7 +468,7 @@ figures<-list(res_bl_RR=res_bl_RR,
               res_bl_RD=res_bl_RD)
 
 for (i in 1:length(figures)){
-  ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/NOPROXY/",names(figures)[i],".jpg"), 
+  ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/",names(figures)[i],".jpg"), 
          plot=eval(parse_expr(names(figures[i]))), dpi="retina", width = 6.5)
 }
 
@@ -528,6 +532,6 @@ pred_prev_blwt_dem_byrace<-ggplot(data=pred_forplot[pred_forplot$race %in% c("Wh
 
 pred_prev_blwt_dem_byrace
 
-ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/NOPROXY/pred_prev_blwt_dem_byrace.jpg"), 
+ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/pred_prev_blwt_dem_byrace.jpg"), 
        plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
 ```
