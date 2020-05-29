@@ -2352,7 +2352,7 @@ Proc format library=NHATS;
 	;
 	value higstschl
 		-7 = 'Refusal'
-   		-8 = 'Don’t Know'
+   		-8 = 'DonÂ’t Know'
 		1  = 'NO SCHOOL COMPLETED'
 		2  = '1ST-8TH GRADE'
 		3  = '9TH-12TH GRADE (NO DIPLOMA)'
@@ -2365,7 +2365,7 @@ Proc format library=NHATS;
 	;
 	value borninus
 		-7 = 'Refusal'
-   		-8 = 'Don’t Know'
+   		-8 = 'DonÂ’t Know'
 		1  = 'YES'
 		2  = 'NO'
 	;
