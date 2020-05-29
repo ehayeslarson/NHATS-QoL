@@ -177,3 +177,38 @@ round(100*prop.table(table1.stroke_proxy,2),digits=1)
 table1.ca_proxy<-table(clean_data_hrqol_probdem$sr.cancer, clean_data_hrqol_probdem$proxy)
 table1.ca_proxy
 round(100*prop.table(table1.ca_proxy,2),digits=1)
+
+
+#---- Weighted pooled proxy percentages ----
+
+nhats_design<-svydesign(data=clean_data_hrqol_probdem, id=~cluster, strata=~stratum, weights=~analytic.wgt, nest=T)
+
+#proxy
+pr_proxy.wgt<-svytable(~proxy, nhats_design, exclude=NULL, round=T, na.action=na.pass, addNA=TRUE)
+pr_proxy.wgt
+100*(14492455/(14492455+8266098))
+100*(8266098/(14492455+8266098))
+
+#covariates
+pr_age.wgt<-svytable(~age.cat+proxy, nhats_design, round=T, na.action=na.pass, addNA=FALSE)
+round(100*prop.table(pr_age.wgt,2),digits=1)
+
+pr_sex.wgt<-svytable(~female+proxy, nhats_design, round=T, na.action=na.pass, addNA=FALSE)
+round(100*prop.table(pr_sex.wgt,2),digits=1)
+
+pr_resid.wgt<-svytable(~resid.care+proxy, nhats_design, round=T, na.action=na.pass, addNA=FALSE)
+pr_resid.wgt
+round(100*prop.table(pr_resid.wgt,2),digits=1)
+100*(2204629/(2204629+12287826))  
+
+pr_highbp.wgt<-svytable(~sr.highbp+proxy, nhats_design, round=T, na.action=na.pass, addNA=FALSE)
+round(100*prop.table(pr_highbp.wgt,2),digits=1)
+
+pr_dm.wgt<-svytable(~sr.diabetes+proxy, nhats_design, round=T, na.action=na.pass, addNA=FALSE)
+round(100*prop.table(pr_dm.wgt,2),digits=1)
+
+pr_stroke.wgt<-svytable(~sr.stroke+proxy, nhats_design, round=T, na.action=na.pass, addNA=FALSE)
+round(100*prop.table(pr_stroke.wgt,2),digits=1)
+
+pr_ca.wgt<-svytable(~sr.cancer+proxy, nhats_design, round=T, na.action=na.pass, addNA=FALSE)
+round(100*prop.table(pr_ca.wgt,2),digits=1)
