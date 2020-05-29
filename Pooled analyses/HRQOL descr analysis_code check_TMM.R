@@ -1,20 +1,20 @@
-#------------------------------------------------------------------
-# Title: HRQoL descriptive analysis pooled -- code check by TMM
+#---
+# Title: HRQoL descriptive analysis pooled + descr analysis pooled proxy -- code check by TMM
 # Author: Taylor Mobley
-#------------------------------------------------------------------
+#---
 
-#------------------------------------------------------------------
-# Loading packages, options and initializations #
-#------------------------------------------------------------------
+
+#---- Loading packages, options and initializations ----
+
 if (!require("pacman")) 
   install.packages("pacman", repos='http://cran.us.r-project.org')
 
 p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "gee", "wgeesel", 
        "survey", "tableone", "openxlsx", "rlang")
 
-#------------------------------------------------------------------
-# Load clean data#
-#------------------------------------------------------------------
+
+#---- Load clean data ----
+
 #load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
 
 load("C:/Users/tmobley/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
@@ -26,9 +26,9 @@ idlist<-clean_data_hrqol %>% distinct(spid)
 idlist<-idlist[,1]
 clean_data_hrqol_baseline<-clean_data %>% filter(.,first.obs==1, spid %in% idlist)
 
-#------------------------------------------------------------------
-# ---Unweighted analyses--- #
-#------------------------------------------------------------------
+
+#---- Unweighted pooled analyses---- 
+
 
 #Race/ethnicity variable check - should not have "other"
 table(clean_data_hrqol_baseline$race.eth, exclude=NULL)
@@ -83,9 +83,9 @@ table1.dem
 round(100*prop.table(table1.dem,2),digits=1)
 
 
-#------------------------------------------------------------------
-# ---Unweighted analyses--- #
-#------------------------------------------------------------------
+
+#---- Weighted pooled analyses ----
+
 nhats_design<-svydesign(data=clean_data_hrqol_baseline, id=~cluster, strata=~stratum, weights=~analytic.wgt, nest=T)
 
 raceth.wgt<-svytable(~race.eth, nhats_design, exclude=NULL, round=T, na.action=na.pass, addNA=TRUE)
@@ -129,3 +129,51 @@ round(100*prop.table(stroke.wgt,2),digits=1)
 
 dem.wgt<-svytable(~dementia.status+race.eth, nhats_design, round=T, na.action=na.pass, addNA=FALSE)
 round(100*prop.table(dem.wgt,2),digits=1)
+
+
+#---- Unweighted pooled proxy ----
+
+clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
+
+#For Table A10 in manuscript, restrict to probable dementia observations
+clean_data_hrqol_probdem<-clean_data_hrqol %>% filter(.,dementia.status==1)
+
+table(clean_data_hrqol$dementia.status, exclude=NULL)
+table(clean_data_hrqol_probdem$dementia.status, exclude=NULL)
+
+#Proxy variable check
+table(clean_data_hrqol_probdem$proxy, exclude=NULL)
+
+
+#Unweighted freqs and percentages
+table1.age_proxy<-table(clean_data_hrqol_probdem$age.cat, clean_data_hrqol_probdem$proxy)
+table1.age_proxy
+round(100*prop.table(table1.age_proxy,2),digits=1)
+
+table1.sex_proxy<-table(clean_data_hrqol_probdem$female, clean_data_hrqol_probdem$proxy)
+table1.sex_proxy
+round(100*prop.table(table1.sex_proxy,2),digits=1)
+
+table1.raceth_proxy<-table(clean_data_hrqol_probdem$race.eth, clean_data_hrqol_probdem$proxy)
+table1.raceth_proxy
+round(100*prop.table(table1.raceth_proxy,2),digits=1)
+
+table1.resid_proxy<-table(clean_data_hrqol_probdem$resid.care, clean_data_hrqol_probdem$proxy)
+table1.resid_proxy
+round(100*prop.table(table1.resid_proxy,2),digits=1)
+
+table1.highbp_proxy<-table(clean_data_hrqol_probdem$sr.highbp, clean_data_hrqol_probdem$proxy)
+table1.highbp_proxy
+round(100*prop.table(table1.highbp_proxy,2),digits=1)
+
+table1.dm_proxy<-table(clean_data_hrqol_probdem$sr.diabetes, clean_data_hrqol_probdem$proxy)
+table1.dm_proxy
+round(100*prop.table(table1.dm_proxy,2),digits=1)
+
+table1.stroke_proxy<-table(clean_data_hrqol_probdem$sr.stroke, clean_data_hrqol_probdem$proxy)
+table1.stroke_proxy
+round(100*prop.table(table1.stroke_proxy,2),digits=1)
+
+table1.ca_proxy<-table(clean_data_hrqol_probdem$sr.cancer, clean_data_hrqol_probdem$proxy)
+table1.ca_proxy
+round(100*prop.table(table1.ca_proxy,2),digits=1)
