@@ -20,7 +20,7 @@ options(scipen = 999)
 #Figuring out my data path
 library(here)
 
-raw_data<-read_sas("/Users/CrystalShaw/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
+raw_data<-read_sas("/Users/TMobley/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
 
 clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned variables
 
@@ -426,6 +426,13 @@ table(raw_data$prxyrelat, exclude=NULL)
 clean_data$proxy.relat<-ifelse(raw_data$prxyrelat==-1,NA,raw_data$prxyrelat)
 table(raw_data$prxyrelat, clean_data$proxy.relat, exclude=NULL)
 
+
+#Proxy gender
+table(raw_data$prxygendr, exclude=NULL)
+clean_data$proxy.female<-ifelse(raw_data$prxygendr==-1,NA,
+                                ifelse(raw_data$prxygendr==2,1,0))
+table(raw_data$prxygendr, clean_data$proxy.female, exclude=NULL)
+
 #SP living arrangement
 table(raw_data$lvngarrg, exclude=NULL)
 clean_data$sp.livarrg<-ifelse(raw_data$lvngarrg==-9,NA,raw_data$lvngarrg)
@@ -486,6 +493,27 @@ clean_data$sr.cancer<-ifelse(raw_data$disescn10==1,1,
                                          ifelse(raw_data$disescn10==-8,NA,
                                                 ifelse(raw_data$disescn10==-7,NA,NA)))))
 table(raw_data$disescn10, clean_data$sr.cancer, exclude=NULL)
+
+#Economic well-being
+table(raw_data$nopayhous, exclude=NULL)
+clean_data$trouble.houspay<-ifelse(raw_data$nopayhous==1,1,
+                                 ifelse(raw_data$nopayhous==2,0,NA))
+table(raw_data$nopayhous, clean_data$trouble.houspay, exclude=NULL)
+
+table(raw_data$nopayutil, exclude=NULL)
+clean_data$trouble.utilpay<-ifelse(raw_data$nopayutil==1,1,
+                                    ifelse(raw_data$nopayutil==2,0,NA))
+table(raw_data$nopayutil, clean_data$trouble.utilpay, exclude=NULL)
+
+table(raw_data$mealskip, exclude=NULL)
+clean_data$trouble.mealpay<-ifelse(raw_data$mealskip==1,1,
+                                   ifelse(raw_data$mealskip==2,0,NA))
+table(raw_data$mealskip, clean_data$trouble.mealpay, exclude=NULL)
+
+table(raw_data$nopaymed, exclude=NULL)
+clean_data$trouble.medpay<-ifelse(raw_data$nopaymed==1,1,
+                                  ifelse(raw_data$nopaymed==2,0,NA))
+table(raw_data$nopaymed, clean_data$trouble.medpay, exclude=NULL)
 
 #AD8 score
   table(raw_data$ad8_score, exclude=NULL)
