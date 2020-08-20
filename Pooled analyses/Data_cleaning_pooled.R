@@ -74,10 +74,6 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   clean_data$analytic.wgt<-raw_data$anfinwgt0
   clean_data$analytic.wgt_scaled<-clean_data$analytic.wgt/sum(clean_data$analytic.wgt)
   
-  #Code checking
-  sum(is.na(raw_data$anfinwgt0)) #there's no missing weights
-  hist(raw_data$anfinwgt0)
-  sum(raw_data$anfinwgt0 == 0) #there's no zero weights
   
   #Baseline analytic weight
   summary(raw_data$bl_anfinwgt0, exclude=NULL)
@@ -660,7 +656,7 @@ table(clean_data$race.eth)
 # Save clean data and remove temporary objects
 #------------------------------------------------------------------
 
-save(clean_data, file="C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+save(clean_data, file="C:/Users/tmobley/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
 
 rm(list=ls(pattern="temp"))
 
