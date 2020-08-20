@@ -24,27 +24,14 @@ raw_data<-read_sas("/Users/TMobley/Box/NHATS/DATA/analysis_datasets/nhats_qoldem
 
 clean_data<-data.frame(spid=raw_data$spid) #Create new dataset to store cleaned variables
 
-#Code review
-head(clean_data)
-head(raw_data$spid)
-
 #Bringing in observation indicator variables. 
 clean_data$round<-raw_data$round 
-
-#Code review
-head(clean_data)
-head(raw_data$round)
 
 #EHL notes that these are for the full dataset, prior to dropping observations with missing data. 
 #These need to be recalculated for complete case datasets. 
 clean_data$first.obs<-raw_data$first_obs
 clean_data$count.obs<-raw_data$count_obs
 clean_data$last.obs<-raw_data$last_obs
-
-#Code checking
-head(clean_data)
-head(raw_data[, c("first_obs", "count_obs", "last_obs")])
-
 
 #Cleaning categorical age variables
 table(raw_data$intvrage,exclude=NULL)
@@ -55,18 +42,14 @@ table(raw_data$bl_agecat,exclude=NULL)
                      levels = c(1,2,3,4,5,6),
                      labels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", "85 to 89", "90+")) 
   table(clean_data$age.cat, raw_data$intvrage, exclude=NULL)
-  
-  #Code checking
-  sum(is.na(clean_data$age.cat))
+
 
   clean_data$baseline.age<-raw_data$bl_agecat
   clean_data$baseline.age <- ordered(clean_data$baseline.age,
                               levels = c(1,2,3,4,5,6),
                               labels = c("65 to 69", "70 to 74", "75 to 79", "80 to 84", "85 to 89", "90+")) 
   table(clean_data$baseline.age, raw_data$bl_agecat, exclude=NULL)
-  
-  #Code checking
-  sum(is.na(clean_data$baseline.age))
+
 
 
 #Cleaning selection variable (derived dementia variable)
@@ -101,8 +84,6 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   clean_data$baseline.anwgt<-raw_data$bl_anfinwgt0 
   clean_data$baseline.anwgt_scaled<-clean_data$baseline.anwgt/sum(clean_data$baseline.anwgt)
   
-  #Code checking
-  hist(clean_data$baseline.anwgt_scaled)
   
   #average analytic weight
   mean_by_person <- raw_data %>% 
@@ -114,15 +95,7 @@ table(clean_data$proxy,raw_data$resptype) #Check recoding clean_data$proxy: 0 = 
   
   summary(clean_data$diff.anwgt)
   summary(clean_data$max.anwgt)
-  
-  #Code checking
-  hist(mean_by_person$diff.anwgt)
-  dim(clean_data)
-  dim(mean_by_person)
-  colnames(mean_by_person)
-  head(clean_data$average.anwgt)
-  tail(clean_data$average.anwgt)
-  hist(clean_data$average.anwgt_scaled)
+
   
   #EHL checking
     # clean_data2<- clean_data %>% mutate(bigwtchange=(diff.anwgt>5099))
@@ -256,8 +229,6 @@ table(temp_iadl6, raw_data$dreshelp, exclude=NULL) #check coding
 temp_iadl.max<-pmax(temp_iadl1, temp_iadl2, temp_iadl3, temp_iadl4, temp_iadl5, temp_iadl6)
 table(temp_iadl.max, exclude=NULL)
 
-#Code checking
-head(which(is.na(temp_iadl.max)))
 temp_iadls <- cbind(temp_iadl1, temp_iadl2, temp_iadl3, temp_iadl4, temp_iadl5, 
                     temp_iadl6)
 temp_iadls[30, ]
@@ -496,24 +467,24 @@ table(raw_data$disescn10, clean_data$sr.cancer, exclude=NULL)
 
 #Economic well-being
 table(raw_data$nopayhous, exclude=NULL)
-clean_data$trouble.houspay<-ifelse(raw_data$nopayhous==1,1,
+clean_data$econwb.house<-ifelse(raw_data$nopayhous==1,1,
                                  ifelse(raw_data$nopayhous==2,0,NA))
-table(raw_data$nopayhous, clean_data$trouble.houspay, exclude=NULL)
+table(raw_data$nopayhous, clean_data$econwb.house, exclude=NULL)
 
 table(raw_data$nopayutil, exclude=NULL)
-clean_data$trouble.utilpay<-ifelse(raw_data$nopayutil==1,1,
+clean_data$econwb.util<-ifelse(raw_data$nopayutil==1,1,
                                     ifelse(raw_data$nopayutil==2,0,NA))
-table(raw_data$nopayutil, clean_data$trouble.utilpay, exclude=NULL)
+table(raw_data$nopayutil, clean_data$econwb.util, exclude=NULL)
 
 table(raw_data$mealskip, exclude=NULL)
-clean_data$trouble.mealpay<-ifelse(raw_data$mealskip==1,1,
+clean_data$econwb.meal<-ifelse(raw_data$mealskip==1,1,
                                    ifelse(raw_data$mealskip==2,0,NA))
-table(raw_data$mealskip, clean_data$trouble.mealpay, exclude=NULL)
+table(raw_data$mealskip, clean_data$econwb.meal, exclude=NULL)
 
 table(raw_data$nopaymed, exclude=NULL)
-clean_data$trouble.medpay<-ifelse(raw_data$nopaymed==1,1,
+clean_data$econwb.med<-ifelse(raw_data$nopaymed==1,1,
                                   ifelse(raw_data$nopaymed==2,0,NA))
-table(raw_data$nopaymed, clean_data$trouble.medpay, exclude=NULL)
+table(raw_data$nopaymed, clean_data$econwb.med, exclude=NULL)
 
 #AD8 score
   table(raw_data$ad8_score, exclude=NULL)
@@ -655,8 +626,6 @@ for (i in 0:1) {
 
 clean_data[,c("dem_sens0","dem_sens1")]<-NA
 
-#Code check
-head(clean_data[which(clean_data[, "domain.sum0"] != 0), ])
 
 #Create dem_sens0 to check that it matches NHATS original derived dementia.status variable
 clean_data<-clean_data %>% mutate(dem_sens0=replace(dem_sens0, (clean_data$sr.demalz==1 | clean_data$ad8.score>=2 | clean_data$domain.sum0>=2), 1))
