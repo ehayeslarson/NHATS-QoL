@@ -33,7 +33,7 @@ clean_data_hrqol$latino<-ifelse(clean_data_hrqol$race.eth==3,1,0)
 
 #code checking
 table(clean_data_hrqol$race.eth, exclude=NULL)
-colSums(clean_data_hrqol[, c("black", "latino", "other")])
+colSums(clean_data_hrqol[, c("black", "latino")])
 
 clean_data_hrqol$agecat2<-ifelse(as.numeric(clean_data_hrqol$age.cat)==2,1,0)
 clean_data_hrqol$agecat3<-ifelse(as.numeric(clean_data_hrqol$age.cat)==3,1,0)
