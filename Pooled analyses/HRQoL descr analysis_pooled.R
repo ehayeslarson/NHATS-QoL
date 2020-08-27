@@ -117,7 +117,10 @@ catvar_names<-c("Age (years)", "Female", "Education attained",
 # Save tables #
 #------------------------------------------------------------------
   T1.list <- list("Unweighted" = T1results_unweighted, "Weighted" = T1results_weighted)
-  write.xlsx(T1.list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/Table1.xlsx")
+  #write.xlsx(T1.list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/Table1.xlsx")
+  
+  #code checking
+  write.xlsx(T1.list, file = "C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/Table1.xlsx")
   
   
   
