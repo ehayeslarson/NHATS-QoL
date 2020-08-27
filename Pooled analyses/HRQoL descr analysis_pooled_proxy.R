@@ -18,8 +18,10 @@ p_load("haven", "tidyverse", "magrittr", "foreign", "ggplot2", "gee", "wgeesel",
 #------------------------------------------------------------------
 load("C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
 
+
 #code checking TMM
 load("C:/Users/tmobley/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+
 
 clean_data_hrqol<-clean_data[clean_data$comp.case.HRQoL==1,]
 
@@ -44,9 +46,11 @@ catvar_names<-c("Race/ethnicity", "Age (years)", "Female",
 T1results_unweighted<-matrix(nrow=1, ncol=3)
 T1results_unweighted[1,]<- c("Proxy total",table(clean_data_hrqol$proxy))
 
+
 #code checking
 T1results_unweighted
 #end
+
 
 for (i in 1:length(catvars)){
   tab.to.add<-table(eval(parse_expr(paste0("clean_data_hrqol$",catvars[i])))
@@ -61,17 +65,21 @@ colnames(T1results_unweighted)<-c("Variable name", "No proxy", "Proxy")
 rownames(T1results_unweighted)<-NULL
 T1results_unweighted[is.na(T1results_unweighted[,1]),"Variable name"]<-"Missing"
 
+
 #code checking
 T1results_unweighted
 #end
+
 
 #Probable dementia
 
 clean_data_hrqol_probdem<-clean_data_hrqol[clean_data_hrqol$dementia.status==1,]
 
+
 #code checking
 table(clean_data_hrqol_probdem$dementia.status, exclude=NULL)
 #end
+
 
 T1results_unweighted_probdem<-matrix(nrow=1, ncol=3)
 T1results_unweighted_probdem[1,]<- c("Proxy total",table(clean_data_hrqol_probdem$proxy))
@@ -146,6 +154,7 @@ T1results_weighted_probdem[is.na(T1results_weighted_probdem[,1]),"Variable name"
 T1.list <- list("Unweighted_total" = T1results_unweighted, "Unweighted_probdem" = T1results_unweighted_probdem, 
                 "Weighted_total" = T1results_weighted, "Weighted_probdem" = T1results_weighted_probdem)
 write.xlsx(T1.list, file = "C:/Users/ehlarson/Box/NHATS/OUTPUT/Table1proxy.xlsx")
+
 
 #code checking
 write.xlsx(T1.list, file = "C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/Table1proxy.xlsx")
