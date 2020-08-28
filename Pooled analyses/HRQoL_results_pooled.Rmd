@@ -28,7 +28,6 @@ load("C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled.Rdata")
 load("C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled.Rdata")
 
 #Formatting dataset for plotting
-#POST CODE REVIEW: removed all "other" references in this code chun (only appeared in lines 32-55)
 results_forplot<-pivot_longer(results_all, cols = c("black_est", "hispanic_est"),
                               names_to="race")
 
@@ -129,7 +128,6 @@ res_bl_RD
 
 
 ```{r}
-#POST CODE REVIEW: removed all "other" references in this code chun (only appeared in lines 133-162)
 pred_forplot<-pivot_longer(pred_all, cols = c("white_est", "black_est", "latino_est"),
                            names_to="race")
 
@@ -208,7 +206,6 @@ res_av_RD
 load("C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled_sens.Rdata")
 load("C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled_sens.Rdata")
 
-#POST CODE REVIEW: removed all "other" references in this code chun (only appeared in lines 212-235)
 results_forplot<-pivot_longer(results_all, cols = c("black_est", "hispanic_est"),
                               names_to="race")
 
@@ -311,7 +308,6 @@ res_bl_RD
 #### Predicted prevalence, baseline weights, race/ethnicity-specific dementia
 
 ```{r}
-#POST CODE REVIEW: removed all "other" references in this code chun (only appeared in lines 315-245)
 pred_forplot<-pivot_longer(pred_all, cols = c("white_est", "black_est", "latino_est"),
                            names_to="race")
 
@@ -380,16 +376,7 @@ ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/SENS/pred_pre
 load("C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled_noproxy.Rdata")
 load("C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled_noproxy.Rdata")
 
-#load("C:/Users/ehlarson/Box/NHATS/OUTPUT/HRQOL_pooled_noproxy.Rdata")
-#load("C:/Users/ehlarson/Box/NHATS/OUTPUT/predicted_pooled_noproxy.Rdata")
-
-#load data for code checking
-load("C:/Users/tmobley/Box/NHATS/OUTPUT/HRQOL_pooled_noproxy.Rdata")
-load("C:/Users/tmobley/Box/NHATS/OUTPUT/predicted_pooled_noproxy.Rdata")
-
-
 #Formatting dataset for plotting
-#POST CODE REVIEW: removed all "other" references in this code chun (only appeared in lines 32-55)
 results_forplot<-pivot_longer(results_all, cols = c("black_est", "hispanic_est"),
                               names_to="race")
 
@@ -474,7 +461,7 @@ figures<-list(res_bl_RR=res_bl_RR,
 
 for (i in 1:length(figures)){
 
-  ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/",names(figures)[i],".jpg"), 
+  ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/NOPROXY/",names(figures)[i],".jpg"), 
 
          plot=eval(parse_expr(names(figures[i]))), dpi="retina", width = 6.5)
 }
@@ -488,7 +475,6 @@ res_bl_RD
 
 
 ```{r}
-#POST CODE REVIEW: removed all "other" references in this code chun (only appeared in lines 133-162)
 pred_forplot<-pivot_longer(pred_all, cols = c("white_est", "black_est", "latino_est"),
                            names_to="race")
 
@@ -541,8 +527,5 @@ pred_prev_blwt_dem_byrace
 
 
 ggsave(filename=paste0("C:/Users/ehlarson/Box/NHATS/OUTPUT/FIGURES/NOPROXY/pred_prev_blwt_dem_byrace.jpg"), 
-
-ggsave(filename=paste0("C:/Users/tmobley/Desktop/Git_Repos/NHATS-QoL/Output/pred_prev_blwt_dem_byrace.jpg"), 
-
        plot=pred_prev_blwt_dem_byrace, dpi="retina", width=5, height=9)
 ```

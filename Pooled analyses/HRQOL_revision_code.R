@@ -110,7 +110,11 @@ head(wave5)
 clean_data_hrqol_baseline<-left_join(clean_data_hrqol_baseline, rbind(wave1,wave5), by="spid")
 
 #Any financial hardship defined as at least one of the 4:
-clean_data_hrqol_baseline$anyecon_hardship<-pmax(final$econwb.house_clean, final$econwb.meal_clean, final$econwb.util_clean, final$econwb.med_clean)
+clean_data_hrqol_baseline$anyecon_hardship<-pmax(
+                                clean_data_hrqol_baseline$econwb.house_clean, 
+                                clean_data_hrqol_baseline$econwb.meal_clean, 
+                                clean_data_hrqol_baseline$econwb.util_clean, 
+                                clean_data_hrqol_baseline$econwb.med_clean)
 
 
 #Create tables
@@ -120,7 +124,7 @@ CreateCatTable("anyecon_hardship", "race.eth", data=clean_data_hrqol_baseline, i
 
 #WEighted 
 nhats_design<-svydesign(data=clean_data_hrqol_baseline, id=~cluster, strata=~stratum, weights=~analytic.wgt, nest=T)
-svyCreateCatTable(catvars, "race.eth", data=nhats_design, includeNA=F, test=F)
+svyCreateCatTable("anyecon_hardship", "race.eth", data=nhats_design, includeNA=F, test=F)
 
 
 
@@ -135,4 +139,3 @@ table(clean_data_hrqol_baseline$r1only)
 catvars<-c("race.eth", "age.cat", "female","edu.7cat", "resid.care", "cens.area", "born.us", 
            "proxy", "proxy.fam", "sr.highbp","sr.diabetes","sr.stroke", "sr.cancer", "dementia.status", "round")
 CreateCatTable(catvars, "r1only", clean_data_hrqol_baseline, includeNA=T, test=F)
-CreateCatTable()

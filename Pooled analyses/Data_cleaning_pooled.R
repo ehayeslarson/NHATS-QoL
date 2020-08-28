@@ -20,9 +20,6 @@ options(scipen = 999)
 #Figuring out my data path
 library(here)
 
-
-raw_data<-read_sas("/Users/TMobley/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
-
 raw_data<-read_sas("/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/nhats_qoldem_clean.sas7bdat")
 
 
@@ -328,9 +325,6 @@ clean_data$edu.7cat<-ordered(clean_data$edu.7cat,
 
 table(clean_data$edu.cat,clean_data$edu.7cat, exclude=NULL)
 
-#Didn't create?
-#table(clean_data$edu.cat, clean_data$edu.bin, exclude=NULL)
-
 #Residential status
 table(raw_data$resid, exclude=NULL)
 clean_data$resid.care<-ifelse(raw_data$resid==2,1,
@@ -532,7 +526,6 @@ clean_data$comp.case.HRQoL<-complete.cases(clean_data[c("spid", "round", "first.
 
 table(clean_data[!is.na(clean_data$race.eth),"comp.case.HRQoL"], exclude=NULL)
 
-#POST CODE REVIEW:
 #Checking number of individuals excluded based on race being missing/other
 idlist<-clean_data%>% distinct(spid)
 idlist<-idlist[,1]
@@ -656,8 +649,6 @@ table(clean_data_hrqol$age.cat,  clean_data_hrqol$dem_sens0, clean_data_hrqol$ra
 table(clean_data_hrqol$age.cat,  clean_data_hrqol$dem_sens1, clean_data_hrqol$race.eth,exclude=NULL) #1. Use race-specific 1.5SD 
 
 
-
-##POST CODE REVIEW
 #Drop the "other" race/ethnicity group
 clean_data <- clean_data %>% filter(.,race.eth!=4)
 #Check work
@@ -667,7 +658,7 @@ table(clean_data$race.eth, exclude=NULL)
 # Save clean data and remove temporary objects
 #------------------------------------------------------------------
 
-save(clean_data, file="C:/Users/tmobley/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
+save(clean_data, file="C:/Users/ehlarson/Box/NHATS/DATA/analysis_datasets/QOL_DEM_analysis_clean_pooled.RData")
 
 rm(list=ls(pattern="temp"))
 
